@@ -40,7 +40,6 @@ impl Request {
 
     pub fn serialize(&self) -> String {
         // TODO: return Result
-        //to_string(&self.iso_fields).unwrap()
         to_string(&self).unwrap()
     }
 }
@@ -67,6 +66,6 @@ mod tests {
 
         let r: Request = Request::new(serde_json::from_str(&iso_data).unwrap());
 
-        assert_eq!(r.serialize(), "<RequestInput><FIXME><Header><MessageID>430173293629234065</MessageID><SystemID>PROUST</SystemID></Header></FIXME><ISO8583-87><i000>0100</i000><i002>521324******0895</i002></ISO8583-87></RequestInput>");
+        assert_eq!(r.serialize(), "<RequestInput><Header><MessageID>430173293629234065</MessageID><SystemID>PROUST</SystemID></Header><ISO8583-87><i000>0100</i000><i002>521324******0895</i002></ISO8583-87></RequestInput>");
     }
 }
