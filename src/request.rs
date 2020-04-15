@@ -4,9 +4,11 @@ use serde_xml_rs::to_string;
 
 mod util;
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
 pub struct Header {
+    #[serde(rename(serialize = "MessageID"))]
     message_id: i64,
+    #[serde(rename(serialize = "SystemID"))]
     system_id: String,
 }
 
@@ -16,18 +18,6 @@ impl Header {
             message_id: message_id,
             system_id: system_id,
         }
-    }
-}
-
-impl Serialize for Header {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("Header", 2)?;
-        state.serialize_field("MessageID", &self.message_id)?;
-        state.serialize_field("SystemID", &self.system_id)?;
-        state.end()
     }
 }
 
