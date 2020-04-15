@@ -1,10 +1,10 @@
-use serde::Serialize;
+use serde::{ser::SerializeStruct, Serialize, Serializer};
 use serde_json::Value;
 use serde_xml_rs::to_string;
 
 mod util;
 
-#[derive(Serialize, Debug)]
+#[derive(Debug)]
 pub struct Header {
     message_id: i64,
     system_id: String,
@@ -16,6 +16,18 @@ impl Header {
             message_id: message_id,
             system_id: system_id,
         }
+    }
+}
+
+impl Serialize for Header {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("Header", 2)?;
+        state.serialize_field("MessageID", &self.message_id)?;
+        state.serialize_field("SystemID", &self.system_id)?;
+        state.end()
     }
 }
 
@@ -45,9 +57,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_dummy_header_serialization() {
+    fn custom_header_serialization() {
         let hdr = Header::new(1234, String::from("IDDQD"));
-        assert_eq!(to_string(&hdr).unwrap(), "<Header><message_id>1234</message_id><system_id>IDDQD</system_id></Header>");
+        assert_eq!(
+            to_string(&hdr).unwrap(),
+            "<Header><MessageID>1234</MessageID><SystemID>IDDQD</SystemID></Header>"
+        );
     }
 }
-
