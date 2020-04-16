@@ -2,11 +2,13 @@ extern crate serde;
 extern crate serde_xml_rs;
 extern crate serde_derive;
 
-use serde_xml_rs::{to_string};
 use serde_json::{Result, Value};
 
+mod request;
+use request::Request;
+
 fn main() -> Result<()> {
-	let data = r#"
+	let iso_data = r#"
 		{
 			"i000": "0100",
 			"i002": "521324******0895",
@@ -32,10 +34,11 @@ fn main() -> Result<()> {
 			"i120": "UD009TF0040431"
 		}"#;
 
-	let v: Value = serde_json::from_str(&data)?;
-	println!("{:?}", v);
+	let iso_obj: Value = serde_json::from_str(&iso_data)?;
 
-	let serialized = to_string(&v).unwrap();
+	let r : Request = Request::new(iso_obj);
+
+	let serialized = r.serialize();
 	println!("{}", serialized);
 
 	Ok(())
