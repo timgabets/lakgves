@@ -8,6 +8,8 @@ mod request;
 use request::Request;
 
 fn main() -> Result<()> {
+
+	// Some day it is gonna be data parsed from the incoming http-request
 	let iso_data = r#"
 		{
 			"i000": "0100",

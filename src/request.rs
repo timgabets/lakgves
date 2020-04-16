@@ -1,7 +1,8 @@
 use serde_json::{Value};
 use serde_xml_rs::{to_string};
+use serde::{Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
 pub struct Header {
 	message_id : i64,
 	system_id : String,
@@ -23,37 +24,35 @@ impl Header {
 	}
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
 pub struct Request {
-	id : i32,
 	header : Header,
 	iso_fields : Value,
 }
 
 impl Request {
 	pub fn new(iso_obj : Value) -> Request {
-		Request {id: 300, header: Header::new(), iso_fields: iso_obj}
+		Request {header: Header::new(), iso_fields: iso_obj}
 	}
 
 	pub fn serialize(&self) -> String {
 		// TODO: return Result
-		to_string(&self.iso_fields).unwrap()
+		//to_string(&self.iso_fields).unwrap()
+		to_string(&self).unwrap()
 	}
 }
 
-/*
 #[cfg(test)]
 mod tests {
 	use super::*;
 
 	#[test]
-	fn dummy_gen_message_id() {
-		assert_eq!(gen_message_id(), 430173293629234065);
-	}
+	fn request_serializetion_no_iso_tags() {
+		let iso_data = r#"{}"#;
 
-	#[test]
-	fn dummy_gen_system_id() {
-		assert_eq!(gen_system_id(), "PROUST");
+		let r : Request = Request::new(serde_json::from_str(&iso_data).unwrap());
+
+		let serialized = r.serialize();
+		assert_eq!(serialized, "");
 	}
 }
-*/
