@@ -40,19 +40,14 @@ impl Request {
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn request_serialization_no_iso_tags() {
-        let iso_data = r#"{}"#;
-
-        let r : Request = Request::new(serde_json::from_str(&iso_data).unwrap());
-
-        let serialized = r.serialize();
-        assert_eq!(serialized, "");
+    fn test_dummy_header_serialization() {
+        let hdr = Header::new(1234, String::from("IDDQD"));
+        assert_eq!(to_string(&hdr).unwrap(), "<Header><message_id>1234</message_id><system_id>IDDQD</system_id></Header>");
     }
 }
-*/
+
