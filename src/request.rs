@@ -1,4 +1,4 @@
-use serde::{ser::SerializeStruct, Serialize, Serializer};
+use serde::Serialize;
 use serde_json::Value;
 use serde_xml_rs::to_string;
 
@@ -21,9 +21,12 @@ impl Header {
     }
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
+#[serde(rename(serialize = "RequestInput"))]
 pub struct Request {
+    #[serde(rename(serialize = "FIXME"))]
     header: Header,
+    #[serde(rename(serialize = "ISO8583-87"))]
     iso_fields: Value,
 }
 
@@ -39,18 +42,6 @@ impl Request {
         // TODO: return Result
         //to_string(&self.iso_fields).unwrap()
         to_string(&self).unwrap()
-    }
-}
-
-impl Serialize for Request {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("RequestInput", 2)?;
-        state.serialize_field("FIXME", &self.header)?;
-        state.serialize_field("ISO8583-87", &self.iso_fields)?;
-        state.end()
     }
 }
 
