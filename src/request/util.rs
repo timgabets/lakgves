@@ -1,5 +1,7 @@
+extern crate chrono;
 extern crate rand;
 
+use chrono::prelude::{DateTime, Local};
 use rand::Rng;
 
 pub fn gen_message_id() -> i64 {
@@ -12,7 +14,7 @@ pub fn get_system_id() -> String {
     String::from("PROUST")
 }
 
-/// Generate STAN (System Trace Audit Number) - N 6
+/// Generate STAN (System Trace Audit Number) - ISO 011 (N 6)
 pub fn gen_stan() -> String {
     let mut rng = rand::thread_rng();
     let stan: u32 = rng.gen();
@@ -26,7 +28,13 @@ pub fn gen_stan() -> String {
     stan
 }
 
-/// Generate RRN (Retrieval Referense Number) - AN 12
+/// Get local transaction time represented as HHMMSS - ISO 012 (N 6)
+pub fn get_hhmmss() -> String {
+    let now: DateTime<Local> = Local::now();
+    now.format("%H%M%S").to_string()
+}
+
+/// Generate RRN (Retrieval Referense Number) - ISO 037 (AN 12)
 pub fn gen_rrn() -> String {
     let mut rng = rand::thread_rng();
     let rrn: u64 = rng.gen();
@@ -61,6 +69,12 @@ mod tests {
         assert_eq!(stan1.len(), 6);
         assert_eq!(stan2.len(), 6);
         assert_ne!(stan1, stan2);
+    }
+
+    #[test]
+    fn test_get_hhmmss() {
+        let hhmmss = get_hhmmss();
+        assert_eq!(hhmmss.len(), 6);
     }
 
     #[test]
