@@ -1,10 +1,10 @@
 ## Proust
 
-Proust converts http requests to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) messages. The main purpose of the system is testing Issuer Bank systems.
+HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter. The main purpose of the system is testing Issuer Bank systems.
 
                            +-----------------+                    +--------------------+
                            |                 | <--  ISO 8583  --> |    Issuer Bank     |
-    HTTP client <--JSON--> |     ISOKat      | <--VISA SMS/DMS--> |   Authorization    |
+    HTTP client <--JSON--> |     Proust      | <--VISA SMS/DMS--> |   Authorization    |
                            |                 | <-- Mastercard --> |        Host        |
                            +-----------------+                    +--------------------+
 
