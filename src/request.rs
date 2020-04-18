@@ -58,6 +58,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn dummy_request_serialization() {
         let iso_data = r#"{
             "i000": "0100",
