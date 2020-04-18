@@ -25,6 +25,7 @@ impl Header {
 #[serde(rename(serialize = "RequestInput"))]
 pub struct Request {
     #[serde(rename(serialize = "FIXME"))]
+    #[serde(flatten)]
     header: Header,
     #[serde(rename(serialize = "ISO8583-87"))]
     iso_fields: Value,
