@@ -12,7 +12,21 @@ pub fn get_system_id() -> String {
     String::from("PROUST")
 }
 
-/// Generate RRN (Retrieval Referense Number)
+/// Generate STAN (System Trace Audit Number) - N 6
+pub fn gen_stan() -> String {
+    let mut rng = rand::thread_rng();
+    let stan: u32 = rng.gen();
+    let mut stan = stan.to_string();
+    // STAN is 6 characters length, padded with zeros from the left
+    if stan.len() > 6 {
+        stan.truncate(6);
+    } else {
+        stan = format!("{:06}", stan);
+    }
+    stan
+}
+
+/// Generate RRN (Retrieval Referense Number) - AN 12
 pub fn gen_rrn() -> String {
     let mut rng = rand::thread_rng();
     let rrn: u64 = rng.gen();
@@ -37,6 +51,16 @@ mod tests {
     #[test]
     fn gen_system_id_dummy() {
         assert_eq!(get_system_id(), "PROUST");
+    }
+
+    #[test]
+    fn test_dummy_gen_stan() {
+        let stan1 = gen_stan();
+        let stan2 = gen_stan();
+
+        assert_eq!(stan1.len(), 6);
+        assert_eq!(stan2.len(), 6);
+        assert_ne!(stan1, stan2);
     }
 
     #[test]
