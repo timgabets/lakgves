@@ -34,6 +34,12 @@ pub fn get_hhmmss() -> String {
     now.format("%H%M%S").to_string()
 }
 
+/// Get local transaction date represented as MMDD - ISO 013 (N 4)
+pub fn get_mmdd() -> String {
+    let now: DateTime<Local> = Local::now();
+    now.format("%m%d").to_string()
+}
+
 /// Generate RRN (Retrieval Referense Number) - ISO 037 (AN 12)
 pub fn gen_rrn() -> String {
     let mut rng = rand::thread_rng();
@@ -75,6 +81,12 @@ mod tests {
     fn test_get_hhmmss() {
         let hhmmss = get_hhmmss();
         assert_eq!(hhmmss.len(), 6);
+    }
+
+    #[test]
+    fn test_get_mmdd() {
+        let mmdd = get_mmdd();
+        assert_eq!(mmdd.len(), 4);
     }
 
     #[test]
