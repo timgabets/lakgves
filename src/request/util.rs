@@ -28,6 +28,12 @@ pub fn gen_stan() -> String {
     stan
 }
 
+/// Get local transaction date and time represented as mmddHHMMSS - ISO 007 (N 10)
+pub fn get_mmddhhmmss() -> String {
+    let now: DateTime<Local> = Local::now();
+    now.format("%d%m%H%M%S").to_string()
+}
+
 /// Get local transaction time represented as HHMMSS - ISO 012 (N 6)
 pub fn get_hhmmss() -> String {
     let now: DateTime<Local> = Local::now();

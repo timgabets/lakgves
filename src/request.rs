@@ -21,9 +21,16 @@ pub struct Request {
 
 impl Request {
     pub fn new(iso_obj: Value) -> Request {
-        Request {
+        let mut req = Request {
             iso_fields: iso_obj,
-        }
+        };
+        // TODO: check existing fields
+        req.iso_fields["i007"] = serde_json::value::Value::String(util::get_mmddhhmmss());
+        req.iso_fields["i011"] = serde_json::value::Value::String(util::gen_stan());
+        req.iso_fields["i012"] = serde_json::value::Value::String(util::get_hhmmss());
+        req.iso_fields["i013"] = serde_json::value::Value::String(util::get_mmdd());
+        req.iso_fields["i037"] = serde_json::value::Value::String(util::gen_rrn());
+        req
     }
 
     pub fn serialize(&self) -> String {
@@ -39,6 +46,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore]
     fn dummy_request_serialization() {
         let iso_data = r#"{
             "i000": "0100",
