@@ -1,3 +1,5 @@
+extern crate gotham;
+extern crate mime;
 extern crate serde;
 extern crate serde_derive;
 extern crate serde_xml_rs;
@@ -11,20 +13,14 @@ use serde_json::Value;
 mod request;
 use request::Request;
 
+use gotham::helpers::http::response::create_response;
 use gotham::router::builder::*;
 use gotham::router::Router;
 use gotham::state::State;
-//use hyper::{Get, Head};
 
-const HELLO_WORLD: &str = "Hello World!";
+use hyper::{Body, Response, StatusCode};
 
-/// Create a `Handler` which is invoked when responding to a `Request`.
-///
-/// How does a function become a `Handler`?.
-/// We've simply implemented the `Handler` trait, for functions that match the signature used here,
-/// within Gotham itself.
-pub fn say_hello(state: State) -> (State, &'static str) {
-    // Some day it is gonna be data parsed from the incoming http-request
+pub fn handler(state: State) -> (State, Response<Body>) {
     let iso_data = r#"
 		{
 			"i000": "0100",
@@ -55,18 +51,19 @@ pub fn say_hello(state: State) -> (State, &'static str) {
 
     //let mut s = TcpStream::connect("10.217.13.27:10304").unwrap();
     //s.write(&msg.as_bytes()).expect("write() error");
-    println!("{}", msg);
+    // println!("{}", msg);
 
     //let mut buffer = [0; 2048];
     //s.read(&mut buffer).expect("read() error");
     //println!("recv: {}", String::from_utf8_lossy(&buffer[..]));
 
-    (state, HELLO_WORLD)
+    let res = create_response(&state, StatusCode::OK, mime::TEXT_PLAIN, msg);
+    (state, res)
 }
 
 fn router() -> Router {
     build_simple_router(|route| {
-        route.get("/").to(say_hello);
+        route.post("/").to(handler);
     })
 }
 
