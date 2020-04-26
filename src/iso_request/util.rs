@@ -4,16 +4,6 @@ extern crate rand;
 use chrono::prelude::{DateTime, Local};
 use rand::Rng;
 
-pub fn gen_message_id() -> i64 {
-    // TODO: random generating
-    430173293629234065
-}
-
-pub fn get_system_id() -> String {
-    // TODO: using from config file??
-    String::from("PROUST")
-}
-
 /// Generate STAN (System Trace Audit Number) - ISO 011 (N 6)
 pub fn gen_stan() -> String {
     let mut rng = rand::thread_rng();
@@ -63,15 +53,6 @@ pub fn gen_rrn() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn gen_message_id_dummy() {
-        assert_eq!(gen_message_id(), 430173293629234065);
-    }
-    #[test]
-    fn gen_system_id_dummy() {
-        assert_eq!(get_system_id(), "PROUST");
-    }
 
     #[test]
     fn test_dummy_gen_stan() {
