@@ -1,6 +1,6 @@
 [package]
 name = "proust"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Tim Gabets <tim@gabets.ru>"]
 edition = "2018"
 

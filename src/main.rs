@@ -1,11 +1,13 @@
 mod iso_request;
 use iso_request::IsoRequest;
 
+use std::io::prelude::*;
+
 use hyper::service::{make_service_fn, service_fn};
 use hyper::Server;
 use hyper::{Body, Client, Request, Response, Uri};
 use serde_json::Value;
-use std::net::SocketAddr;
+use std::net::{SocketAddr, TcpStream};
 
 async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
     println!("Got request at {:?}", req.uri());
@@ -45,12 +47,17 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
     let r: IsoRequest = IsoRequest::new(iso_obj);
     let msg = r.serialize();
 
-    println!("{:?}", msg);
-
+    // The whole block here of writing/reading data is syncronous (i.e. blocking)
     // TODO: asynchronously sending data to ISO host
-    //let mut s = TcpStream::connect("10.217.13.27:10304").unwrap();
-    //s.write(&msg.as_bytes()).expect("write() error");
-    // println!("{}", msg);
+    let mut s = TcpStream::connect("10.217.13.27:10304").unwrap();
+    s.write(&msg.as_bytes()).expect("write() error");
+    println!("{}", msg);
+
+    let mut buffer = [0; 2048];
+    s.read(&mut buffer).expect("read() error");
+    println!("{:?}", String::from_utf8_lossy(&buffer[..]));
+
+    //
     let url = "http://www.rust-lang.org/en-US/"
         .parse::<Uri>()
         .expect("Error parsing URL");
@@ -76,6 +83,6 @@ async fn run_server(addr: SocketAddr) {
 
 #[tokio::main]
 async fn main() {
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
     run_server(addr).await;
 }
