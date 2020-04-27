@@ -1,13 +1,26 @@
 mod iso_request;
 use iso_request::IsoRequest;
 
-use std::io::prelude::*;
-
 use hyper::service::{make_service_fn, service_fn};
 use hyper::Server;
 use hyper::{Body, Client, Request, Response, Uri};
 use serde_json::Value;
-use std::net::{SocketAddr, TcpStream};
+use std::net::SocketAddr;
+
+use async_std::net::TcpStream;
+use async_std::prelude::*;
+
+async fn talk_to_iso_host(msg: String) -> Result<(), std::io::Error> {
+    let mut s = TcpStream::connect("10.217.13.27:10304").await?;
+    s.write_all(&msg.as_bytes()).await?;
+    println!("{}", msg);
+
+    let mut buffer = [0; 2048]; // TODO: some more buffer size maybe?
+    s.read(&mut buffer).await?;
+    println!("{:?}", String::from_utf8_lossy(&buffer[..]));
+
+    Ok(())
+}
 
 async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
     println!("Got request at {:?}", req.uri());
@@ -20,42 +33,14 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
 
     let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
 
-    /*
-    let iso_data = r#"
-        {
-            "i000": "0100",
-            "i002": "5536913******0961",
-            "i003": "300000",
-            "i004": "000000000000",
-            "i014": "2402",
-            "i018": "6011",
-            "i022": "0100",
-            "i023": "000",
-            "i025": "02",
-            "i026": "04",
-            "i032": "437783",
-            "i037": "293629234065",
-            "i041": "TERMID01",
-            "i042": "IDDQD MERCH ID",
-            "i043": "IDDQD AM. 341215574     341215574 MSKRU",
-            "i049": "643",
-            "i053": "9801100001000000",
-            "i120": "UD009TF0040431"
-        }"#;
-     */
-
     let r: IsoRequest = IsoRequest::new(iso_obj);
     let msg = r.serialize();
 
-    // The whole block here of writing/reading data is syncronous (i.e. blocking)
-    // TODO: asynchronously sending data to ISO host
-    let mut s = TcpStream::connect("10.217.13.27:10304").unwrap();
-    s.write(&msg.as_bytes()).expect("write() error");
-    println!("{}", msg);
-
-    let mut buffer = [0; 2048];
-    s.read(&mut buffer).expect("read() error");
-    println!("{:?}", String::from_utf8_lossy(&buffer[..]));
+    match talk_to_iso_host(msg).await {
+        Ok(_) => {}
+        // TODO: return HTTP 502/503
+        Err(err) => eprintln!("error: {}", err),
+    }
 
     //
     let url = "http://www.rust-lang.org/en-US/"

@@ -1,6 +1,6 @@
 [package]
 name = "proust"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Tim Gabets <tim@gabets.ru>"]
 edition = "2018"
 
@@ -13,6 +13,7 @@ serde-xml-rs = "0.4.0"
 serde_derive = "1.0.106"
 rand = "0.7"
 chrono = "0.4.11"
-
 hyper = "0.13.0"
 tokio = { version = "0.2", features = ["full"] }
+async-std = "1.5.0"
+
