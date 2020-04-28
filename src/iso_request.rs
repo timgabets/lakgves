@@ -63,9 +63,10 @@ mod tests {
     #[test]
     fn dummy_deserialization() {
         let s = r##"
+        <?xml version="1.0"?>
         <RequestResponse>
             <ISO8583-87><i000>0110</i000><i002>553691******0961</i002><i003>300000</i003><i004>000000000000</i004><i007>2804114717</i007><i043><![CDATA[IDDQD AM. 341215574     341215574 MSKRU]]></i043><i120>UD038IR0044444CR009ES0048100IA0103510198686</i120></ISO8583-87>"
-        </RequestResponse>    */
+        </RequestResponse>
         "##;
 
         let resp: IsoRequest = from_reader(s.as_bytes()).unwrap();
