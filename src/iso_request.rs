@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 use serde_xml_rs::{from_reader, to_string};
+
+use std::collections::BTreeMap;
 
 mod util;
 
@@ -20,26 +22,17 @@ pub struct DHIResult {
     description: String,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Serialize, Debug)]
 #[serde(rename(serialize = "RequestInput"))]
 #[serde(rename(deserialize = "RequestResponse"))]
 pub struct IsoRequest {
-    #[serde(skip_serializing)]
-    #[serde(rename(deserialize = "Result"))]
-    res: DHIResult,
-
     #[serde(rename(serialize = "ISO8583-87"))]
-    #[serde(rename(deserialize = "ISO8583-87"))]
     iso_fields: Value,
 }
 
 impl IsoRequest {
     pub fn new(iso_obj: Value) -> IsoRequest {
         let mut req = IsoRequest {
-            res: DHIResult {
-                code: 0,
-                description: String::from("OK"),
-            },
             iso_fields: iso_obj,
         };
         // TODO: check existing fields
@@ -57,6 +50,16 @@ impl IsoRequest {
         let serialized = format!("{:05}{}", serialized.len(), serialized);
         serialized
     }
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename(deserialize = "RequestResponse"))]
+pub struct DHIResponse {
+    #[serde(rename(deserialize = "Result"))]
+    res: DHIResult,
+
+    #[serde(rename(deserialize = "ISO8583-87"))]
+    iso_fields: BTreeMap<String, String>,
 }
 
 #[cfg(test)]
@@ -87,25 +90,25 @@ mod tests {
         </RequestResponse>
         "##;
 
-        let resp: IsoRequest = from_reader(s.as_bytes()).unwrap();
+        let resp: DHIResponse = from_reader(s.as_bytes()).unwrap();
 
         assert_eq!(resp.res.code, 0);
         assert_eq!(resp.res.description, "OK");
-        assert_eq!(resp.iso_fields["i000"], json!({"$value": "0110" }));
-        assert_eq!(
-            resp.iso_fields["i002"],
-            json!({"$value": "553691******0961" })
-        );
-        assert_eq!(resp.iso_fields["i003"], json!({"$value": "300000" }));
-        assert_eq!(resp.iso_fields["i004"], json!({"$value": "000000000000" }));
-        assert_eq!(resp.iso_fields["i007"], json!({"$value": "2804114717" }));
+
+        assert_eq!(resp.iso_fields["i000"], "0110");
+        assert_eq!(resp.iso_fields["i002"], "553691******0961");
+        assert_eq!(resp.iso_fields["i003"], "300000");
+        assert_eq!(resp.iso_fields["i004"], "000000000000");
+        assert_eq!(resp.iso_fields["i007"], "2804114717");
         assert_eq!(
             resp.iso_fields["i043"],
-            json!({"$value": "IDDQD AM. 341215574     341215574 MSKRU" })
+            "IDDQD AM. 341215574     341215574 MSKRU"
         );
         assert_eq!(
             resp.iso_fields["i120"],
-            json!({"$value": "UD038IR0044444CR009ES0048100IA0103510198686" })
+            "UD038IR0044444CR009ES0048100IA0103510198686"
         );
+
+        assert_eq!(serde_json::to_string(&resp.iso_fields).unwrap(), "{\"i000\":\"0110\",\"i002\":\"553691******0961\",\"i003\":\"300000\",\"i004\":\"000000000000\",\"i007\":\"2804114717\",\"i043\":\"IDDQD AM. 341215574     341215574 MSKRU\",\"i120\":\"UD038IR0044444CR009ES0048100IA0103510198686\"}");
     }
 }
