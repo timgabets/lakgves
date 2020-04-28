@@ -14,17 +14,8 @@ pub struct Header {
     system_id: String,
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename(deserialize = "Result"))]
-#[serde(rename_all = "PascalCase")]
-pub struct DHIResult {
-    code: i32,
-    description: String,
-}
-
 #[derive(Serialize, Debug)]
 #[serde(rename(serialize = "RequestInput"))]
-#[serde(rename(deserialize = "RequestResponse"))]
 pub struct DHIRequest {
     #[serde(rename(serialize = "ISO8583-87"))]
     iso_fields: Value,
@@ -50,6 +41,14 @@ impl DHIRequest {
         let serialized = format!("{:05}{}", serialized.len(), serialized);
         serialized
     }
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename(deserialize = "Result"))]
+#[serde(rename_all = "PascalCase")]
+pub struct DHIResult {
+    code: i32,
+    description: String,
 }
 
 #[derive(Deserialize, Debug)]
