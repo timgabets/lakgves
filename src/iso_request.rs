@@ -12,10 +12,22 @@ pub struct Header {
     system_id: String,
 }
 
+#[derive(Deserialize, Debug)]
+#[serde(rename(deserialize = "Result"))]
+#[serde(rename_all = "PascalCase")]
+pub struct DHIResult {
+    code: i32,
+    description: String,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename(serialize = "RequestInput"))]
 #[serde(rename(deserialize = "RequestResponse"))]
 pub struct IsoRequest {
+    #[serde(skip_serializing)]
+    #[serde(rename(deserialize = "Result"))]
+    res: DHIResult,
+
     #[serde(rename(serialize = "ISO8583-87"))]
     #[serde(rename(deserialize = "ISO8583-87"))]
     iso_fields: Value,
@@ -24,6 +36,10 @@ pub struct IsoRequest {
 impl IsoRequest {
     pub fn new(iso_obj: Value) -> IsoRequest {
         let mut req = IsoRequest {
+            res: DHIResult {
+                code: 0,
+                description: String::from("OK"),
+            },
             iso_fields: iso_obj,
         };
         // TODO: check existing fields
@@ -65,11 +81,16 @@ mod tests {
         let s = r##"
         <?xml version="1.0"?>
         <RequestResponse>
+            <Header/>
+            <Result><Code>0</Code><Description>OK</Description></Result>
             <ISO8583-87><i000>0110</i000><i002>553691******0961</i002><i003>300000</i003><i004>000000000000</i004><i007>2804114717</i007><i043><![CDATA[IDDQD AM. 341215574     341215574 MSKRU]]></i043><i120>UD038IR0044444CR009ES0048100IA0103510198686</i120></ISO8583-87>"
         </RequestResponse>
         "##;
 
         let resp: IsoRequest = from_reader(s.as_bytes()).unwrap();
+
+        assert_eq!(resp.res.code, 0);
+        assert_eq!(resp.res.description, "OK");
         assert_eq!(resp.iso_fields["i000"], json!({"$value": "0110" }));
         assert_eq!(
             resp.iso_fields["i002"],
