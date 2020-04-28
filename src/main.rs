@@ -1,5 +1,5 @@
-mod iso_request;
-use iso_request::{DHIResponse, IsoRequest};
+mod dhi;
+use dhi::{DHIRequest, DHIResponse};
 
 use hyper::service::{make_service_fn, service_fn};
 use hyper::Server;
@@ -49,7 +49,7 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
 
     let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
 
-    let r: IsoRequest = IsoRequest::new(iso_obj);
+    let r: DHIRequest = DHIRequest::new(iso_obj);
     let msg = r.serialize();
 
     let res = talk_to_iso_host(msg).await;

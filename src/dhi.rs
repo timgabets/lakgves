@@ -25,14 +25,14 @@ pub struct DHIResult {
 #[derive(Serialize, Debug)]
 #[serde(rename(serialize = "RequestInput"))]
 #[serde(rename(deserialize = "RequestResponse"))]
-pub struct IsoRequest {
+pub struct DHIRequest {
     #[serde(rename(serialize = "ISO8583-87"))]
     iso_fields: Value,
 }
 
-impl IsoRequest {
-    pub fn new(iso_obj: Value) -> IsoRequest {
-        let mut req = IsoRequest {
+impl DHIRequest {
+    pub fn new(iso_obj: Value) -> DHIRequest {
+        let mut req = DHIRequest {
             iso_fields: iso_obj,
         };
         // TODO: check existing fields
@@ -74,7 +74,7 @@ mod tests {
             "i002": "521324******0895"
         }"#;
 
-        let r: IsoRequest = IsoRequest::new(serde_json::from_str(&iso_data).unwrap());
+        let r: DHIRequest = DHIRequest::new(serde_json::from_str(&iso_data).unwrap());
 
         assert_eq!(r.serialize(), "00100<RequestInput><ISO8583-87><i000>0100</i000><i002>521324******0895</i002></ISO8583-87></RequestInput>");
     }
