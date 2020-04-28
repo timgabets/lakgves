@@ -61,6 +61,13 @@ pub struct DHIResponse {
     iso_fields: BTreeMap<String, String>,
 }
 
+impl DHIResponse {
+    pub fn serialize(&self) -> String {
+        // TODO: return result
+        serde_json::to_string(&self.iso_fields).unwrap()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -108,6 +115,6 @@ mod tests {
             "UD038IR0044444CR009ES0048100IA0103510198686"
         );
 
-        assert_eq!(serde_json::to_string(&resp.iso_fields).unwrap(), "{\"i000\":\"0110\",\"i002\":\"553691******0961\",\"i003\":\"300000\",\"i004\":\"000000000000\",\"i007\":\"2804114717\",\"i043\":\"IDDQD AM. 341215574     341215574 MSKRU\",\"i120\":\"UD038IR0044444CR009ES0048100IA0103510198686\"}");
+        assert_eq!(resp.serialize(), "{\"i000\":\"0110\",\"i002\":\"553691******0961\",\"i003\":\"300000\",\"i004\":\"000000000000\",\"i007\":\"2804114717\",\"i043\":\"IDDQD AM. 341215574     341215574 MSKRU\",\"i120\":\"UD038IR0044444CR009ES0048100IA0103510198686\"}");
     }
 }
