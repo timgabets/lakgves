@@ -3,7 +3,7 @@ use dhi::{DHIRequest, DHIResponse};
 
 use hyper::service::{make_service_fn, service_fn};
 use hyper::Server;
-use hyper::{Body, Client, Request, Response, Uri};
+use hyper::{Body, Request, Response, StatusCode};
 use serde_json::Value;
 use std::net::SocketAddr;
 
@@ -62,9 +62,8 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
 
     let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
 
-    let res = Response::new(Body::from(res.serialize()));
-
-    // TODO: assigning HTTP status codes explicitly
+    let mut res = Response::new(Body::from(res.serialize()));
+    *res.status_mut() = StatusCode::OK;
     Ok(res)
 }
 
