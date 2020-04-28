@@ -12,27 +12,37 @@ use serde_xml_rs::from_reader;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 
-async fn talk_to_dhi_host(msg: String) -> Result<Response<Body>, std::io::Error> {
+// TODO: move definitions somewhere else
+#[derive(Debug)]
+enum AppError {
+    IoError(std::io::Error),
+    ParseError(serde_xml_rs::Error),
+}
+
+impl From<std::io::Error> for AppError {
+    fn from(error: std::io::Error) -> Self {
+        AppError::IoError(error)
+    }
+}
+
+impl From<serde_xml_rs::Error> for AppError {
+    fn from(error: serde_xml_rs::Error) -> Self {
+        AppError::ParseError(error)
+    }
+}
+
+/// Asynchronously exchange data with DHI host
+async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
     let mut s = TcpStream::connect("10.217.13.27:10304").await?;
+
     s.write_all(&msg.as_bytes()).await?;
     println!("{}", msg);
 
     let mut buffer = [0; 2048]; // TODO: some more buffer size maybe?
     s.read(&mut buffer).await?;
-    //println!("{:?}", String::from_utf8_lossy(&buffer[5..]));
 
-    /* Expected answer may look like this:
-      "00782<?xml version=\"1.0\"?>\n<RequestResponse><Header/><Result><Code>0</Code><Description>OK</Description></Result><ISO8583-87><i000>0110</i000><i002>5536913798660961</i002><i003>300000</i003><i004>000000000000</i004><i007>2804114717</i007><i011>361637</i011><i012>114717</i012><i013>0428</i013><i014>2402</i014><i018>6011</i018><i022>0100</i022><i023>000</i023><i025>02</i025><i026>4</i026><i032>437783</i032><i037>710203141014</i037><i038>022578</i038><i039>00</i039><i041><![CDATA[TERMID01]]></i041><i042>IDDQD MERCH ID </i042><i043><![CDATA[IDDQD AM. 341215574     341215574 MSKRU]]></i043><i049>643</i049><i053>9801100001000000</i053><i054>0001643C099994300762</i054><i096>0000710203141014</i096><i120>UD038IR0044444CR009ES0048100IA0103510198686</i120></ISO8583-87></RequestResponse>\n"
-    */
-
-    let resp: DHIResponse = from_reader(&buffer[5..]).unwrap(); //TODO: unwrap 😱
-    println!("{:?}", resp);
-
-    // TODO: checking resp.res.code != 0
-
-    let response = Response::new(Body::from("Try POSTing data to /echo"));
-    // TODO: headers "content-type": "application/json", "content-length": "319"
-
+    // The first 5 bytes are message length
+    let response: DHIResponse = from_reader(&buffer[5..])?; // FIXME: unwrap 😱
     Ok(response)
 }
 
@@ -50,20 +60,9 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
     let r: DHIRequest = DHIRequest::new(iso_obj);
     let msg = r.serialize();
 
-    let res = talk_to_dhi_host(msg).await;
-    match res {
-        Ok(res) => {
-            println!("{:?}", res);
-        }
-        // TODO: return HTTP 502/503
-        Err(err) => eprintln!("error: {}", err),
-    }
+    let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
 
-    //
-    let url = "http://www.rust-lang.org/en-US/"
-        .parse::<Uri>()
-        .expect("Error parsing URL");
-    let res = Client::new().get(url).await?;
+    let res = Response::new(Body::from(res.serialize()));
 
     // TODO: assigning HTTP status codes explicitly
     Ok(res)
