@@ -44,11 +44,10 @@ impl DHIRequest {
         req
     }
 
-    pub fn serialize(&self) -> String {
-        // TODO: return Result
-        let serialized = to_string(&self).unwrap();
+    pub fn serialize(&self) -> Result<String, serde_xml_rs::Error> {
+        let serialized = to_string(&self)?;
         let serialized = format!("{:05}{}", serialized.len(), serialized);
-        serialized
+        Ok(serialized)
     }
 }
 

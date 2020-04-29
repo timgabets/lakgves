@@ -58,7 +58,7 @@ async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Erro
     let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
 
     let r: DHIRequest = DHIRequest::new(iso_obj);
-    let msg = r.serialize();
+    let msg = r.serialize().unwrap();
 
     let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
 
