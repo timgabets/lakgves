@@ -1,5 +1,5 @@
 #[derive(Debug)]
-enum AppError {
+pub enum AppError {
     IoError(std::io::Error),
     ParseError(serde_xml_rs::Error),
 }
