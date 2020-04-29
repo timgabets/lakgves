@@ -38,11 +38,11 @@ async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
     s.write_all(&msg.as_bytes()).await?;
     println!("{}", msg);
 
-    let mut buffer = [0; 2048]; // TODO: some more buffer size maybe?
+    let mut buffer = [0; 8192];
     s.read(&mut buffer).await?;
 
     // The first 5 bytes are message length
-    let response: DHIResponse = from_reader(&buffer[5..])?; // FIXME: unwrap 😱
+    let response: DHIResponse = from_reader(&buffer[5..])?;
     Ok(response)
 }
 
