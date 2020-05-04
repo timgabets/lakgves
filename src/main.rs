@@ -1,20 +1,20 @@
-/*
 mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
 mod errors;
 use errors::AppError;
 
-use hyper::service::{make_service_fn, service_fn};
-use hyper::Server;
-use hyper::{Body, Request, Response, StatusCode};
-use serde_json::Value;
-use std::net::SocketAddr;
-
-use serde_xml_rs::from_reader;
-
+use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use async_std::net::TcpStream;
 use async_std::prelude::*;
+use futures::StreamExt;
+use serde_json::Value;
+use serde_xml_rs::from_reader;
+use std::sync::Mutex;
+
+struct AppState {
+    counter: Mutex<i32>,
+}
 
 /// Asynchronously exchange data with DHI host
 async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
@@ -31,56 +31,6 @@ async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
     Ok(response)
 }
 
-async fn serve_request(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-    println!("Got request at {:?}", req.uri());
-    println!("Headers: {:?}", req.headers());
-
-    // TODO: routing GET/POST requests
-
-    let body = hyper::body::to_bytes(req.into_body()).await?;
-    let iso_data = String::from_utf8(body.to_vec()).unwrap();
-
-    let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
-
-    let r: DHIRequest = DHIRequest::new(iso_obj);
-    let msg = r.serialize().unwrap();
-
-    let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
-
-    let mut res = Response::new(Body::from(res.serialize()));
-    *res.status_mut() = StatusCode::OK;
-    Ok(res)
-}
-
-async fn run_server(addr: SocketAddr) {
-    println!("Listening on http://{}", addr);
-
-    let serve_future = Server::bind(&addr).serve(make_service_fn(|_| async {
-        {
-            Ok::<_, hyper::Error>(service_fn(serve_request))
-        }
-    }));
-
-    if let Err(e) = serve_future.await {
-        eprintln!("server error: {}", e);
-    }
-}
-
-#[tokio::main]
-async fn main() {
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
-    run_server(addr).await;
-}
-*/
-
-use actix_web::{web, App, Error, HttpResponse, HttpServer};
-use futures::StreamExt;
-use std::sync::Mutex;
-
-struct AppState {
-    counter: Mutex<i32>,
-}
-
 async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
@@ -89,11 +39,20 @@ async fn serve_dhi_request(
     *counter += 1;
     println!("Number of requests: {}", counter);
 
-    let x = body.next().await.unwrap()?;
+    let body = body.next().await.unwrap()?;
+    let iso_data = String::from_utf8(body.to_vec()).unwrap();
+    let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
 
-    println!("{:?}", x);
+    let r: DHIRequest = DHIRequest::new(iso_obj);
+    let msg = r.serialize().unwrap();
 
-    Ok(HttpResponse::Ok().finish())
+    let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
+    println!("{:?}", res);
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .header("X-Hdr", "sample")
+        .body(res.serialize()))
 }
 
 #[actix_rt::main]

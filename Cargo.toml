@@ -1,7 +1,7 @@
 [package]
 name = "proust"
 description = "Framework for testing Bank credit card processing systems (ISO8583)"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Tim Gabets <tim@gabets.ru>"]
 edition = "2018"
 readme = "README.md"
@@ -19,8 +19,6 @@ serde-xml-rs = "0.4.0"
 serde_derive = "1.0.106"
 rand = "0.7"
 chrono = "0.4.11"
-hyper = "0.13.0"
-tokio = { version = "0.2", features = ["full"] }
 async-std = "1.5.0"
 
 actix-web = "2.0"
