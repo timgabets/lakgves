@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_xml_rs::{from_reader, to_string};
 
-use std::collections::BTreeMap;
 use crate::errors::AppError;
+use std::collections::BTreeMap;
 
 mod util;
 
@@ -71,9 +71,9 @@ pub struct DHIResponse {
 }
 
 impl DHIResponse {
-    pub fn serialize(&self) -> String {
-        // TODO: return result
-        serde_json::to_string(&self.iso_fields).unwrap()
+    pub fn serialize(&self) -> Result<String, AppError> {
+        let serialized = serde_json::to_string(&self.iso_fields)?;
+        Ok(serialized)
     }
 }
 

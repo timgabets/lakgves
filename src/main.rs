@@ -48,12 +48,10 @@ async fn serve_dhi_request(
 
     let res = talk_to_dhi_host(msg).await;
     match res {
-        Ok(res) => {
-            Ok(HttpResponse::Ok()
-                .content_type("application/json")
-                .header("X-Hdr", "sample")
-                .body(res.serialize()))
-        }
+        Ok(res) => Ok(HttpResponse::Ok()
+            .content_type("application/json")
+            .header("X-Hdr", "sample")
+            .body(res.serialize().unwrap())),
         Err(err) => match err {
             AppError::IoError(err) => {
                 println!("Error: {:?}", err);
@@ -66,6 +64,12 @@ async fn serve_dhi_request(
                 Ok(HttpResponse::InternalServerError()
                     .content_type("plain/text")
                     .body("Error processing data from DHI host"))
+            }
+            AppError::SerializeError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Serialization error"))
             }
         },
     }
