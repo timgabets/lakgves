@@ -3,6 +3,7 @@ use serde_json::Value;
 use serde_xml_rs::{from_reader, to_string};
 
 use std::collections::BTreeMap;
+use crate::errors::AppError;
 
 mod util;
 
@@ -44,7 +45,7 @@ impl DHIRequest {
         req
     }
 
-    pub fn serialize(&self) -> Result<String, serde_xml_rs::Error> {
+    pub fn serialize(&self) -> Result<String, AppError> {
         let serialized = to_string(&self)?;
         let serialized = format!("{:05}{}", serialized.len(), serialized);
         Ok(serialized)
