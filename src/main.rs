@@ -1,3 +1,4 @@
+/*
 mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
@@ -69,4 +70,23 @@ async fn run_server(addr: SocketAddr) {
 async fn main() {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
     run_server(addr).await;
+}
+*/
+
+use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use futures::StreamExt;
+
+async fn serve_dhi_request(mut body: web::Payload) -> Result<HttpResponse, Error> {
+    let x = body.next().await.unwrap()?;
+    println!("{:?}", x);
+
+    Ok(HttpResponse::Ok().finish())
+}
+
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().route("/dhi", web::post().to(serve_dhi_request)))
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
 }

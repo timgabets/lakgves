@@ -23,3 +23,6 @@ hyper = "0.13.0"
 tokio = { version = "0.2", features = ["full"] }
 async-std = "1.5.0"
 
+actix-web = "2.0"
+actix-rt = "1.0"
+futures = "0.3.4"
