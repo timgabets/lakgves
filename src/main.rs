@@ -18,7 +18,7 @@ struct AppState {
 
 /// Asynchronously exchange data with DHI host
 async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
-    let mut s = TcpStream::connect("10.217.13.27:10304").await?;
+    let mut s = TcpStream::connect("10.217.13.27:10304").await?; // TODO: getting connection from AppState
 
     s.write_all(&msg.as_bytes()).await?;
     println!("{}", msg);
@@ -26,11 +26,12 @@ async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
     let mut buffer = [0; 8192];
     s.read(&mut buffer).await?;
 
-    // The first 5 bytes are message length
+    // The first 5 bytes are the message length
     let response: DHIResponse = from_reader(&buffer[5..])?;
     Ok(response)
 }
 
+// TODO: write tests to cover all the unwrapping
 async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
