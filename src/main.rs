@@ -35,7 +35,7 @@ async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
 ) -> Result<HttpResponse, Error> {
-    let mut counter = data.counter.lock().unwrap();
+    let mut counter = data.counter.lock().unwrap(); // FIXME: here and below - unwrapping 😱
     *counter += 1;
     println!("Number of requests: {}", counter);
 
