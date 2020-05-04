@@ -49,7 +49,6 @@ async fn serve_dhi_request(
     let res = talk_to_dhi_host(msg).await;
     match res {
         Ok(res) => {
-            println!("OK");
             Ok(HttpResponse::Ok()
                 .content_type("application/json")
                 .header("X-Hdr", "sample")
@@ -83,6 +82,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(app_state.clone())
             .route("/dhi", web::post().to(serve_dhi_request))
     })
+    .workers(4) // TODO: make it configurable
+    .keep_alive(75) // <- Set keep-alive to 75 seconds. TODO: make it configurable
     .bind("127.0.0.1:8080")?
     .run()
     .await
