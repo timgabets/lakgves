@@ -55,12 +55,20 @@ async fn serve_dhi_request(
                 .header("X-Hdr", "sample")
                 .body(res.serialize()))
         }
-        Err(err) => {
-            println!("Error: {:?}", err);
-            Ok(HttpResponse::InternalServerError()
-                .content_type("plain/text")
-                .body("Error communicating with DHI host"))
-        }
+        Err(err) => match err {
+            AppError::IoError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::ServiceUnavailable()
+                    .content_type("plain/text")
+                    .body("Error communicating with DHI host"))
+            }
+            AppError::ParseError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Error processing data from DHI host"))
+            }
+        },
     }
 }
 
