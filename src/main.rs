@@ -75,9 +75,22 @@ async fn main() {
 
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use futures::StreamExt;
+use std::sync::Mutex;
 
-async fn serve_dhi_request(mut body: web::Payload) -> Result<HttpResponse, Error> {
+struct AppState {
+    counter: Mutex<i32>,
+}
+
+async fn serve_dhi_request(
+    data: web::Data<AppState>,
+    mut body: web::Payload,
+) -> Result<HttpResponse, Error> {
+    let mut counter = data.counter.lock().unwrap();
+    *counter += 1;
+    println!("Number of requests: {}", counter);
+
     let x = body.next().await.unwrap()?;
+
     println!("{:?}", x);
 
     Ok(HttpResponse::Ok().finish())
@@ -85,8 +98,16 @@ async fn serve_dhi_request(mut body: web::Payload) -> Result<HttpResponse, Error
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().route("/dhi", web::post().to(serve_dhi_request)))
-        .bind("127.0.0.1:8080")?
-        .run()
-        .await
+    let app_state = web::Data::new(AppState {
+        counter: Mutex::new(0),
+    });
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(app_state.clone())
+            .route("/dhi", web::post().to(serve_dhi_request))
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
 }
