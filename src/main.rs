@@ -46,13 +46,22 @@ async fn serve_dhi_request(
     let r: DHIRequest = DHIRequest::new(iso_obj);
     let msg = r.serialize().unwrap();
 
-    let res = talk_to_dhi_host(msg).await.unwrap(); // FIXME: unwrap 😱
-    println!("{:?}", res);
-
-    Ok(HttpResponse::Ok()
-        .content_type("application/json")
-        .header("X-Hdr", "sample")
-        .body(res.serialize()))
+    let res = talk_to_dhi_host(msg).await;
+    match res {
+        Ok(res) => {
+            println!("OK");
+            Ok(HttpResponse::Ok()
+                .content_type("application/json")
+                .header("X-Hdr", "sample")
+                .body(res.serialize()))
+        }
+        Err(err) => {
+            println!("Error: {:?}", err);
+            Ok(HttpResponse::InternalServerError()
+                .content_type("plain/text")
+                .body("Error communicating with DHI host"))
+        }
+    }
 }
 
 #[actix_rt::main]
