@@ -14,11 +14,12 @@ use std::sync::Mutex;
 
 struct AppState {
     counter: Mutex<i32>,
+    host_stream: TcpStream,
 }
 
 /// Asynchronously exchange data with DHI host
-async fn talk_to_dhi_host(msg: String) -> Result<DHIResponse, AppError> {
-    let mut s = TcpStream::connect("10.217.13.27:10304").await?; // TODO: getting connection from AppState
+async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIResponse, AppError> {
+    let mut s = &data.host_stream;
 
     s.write_all(&msg.as_bytes()).await?;
     println!("{}", msg);
@@ -36,9 +37,11 @@ async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
 ) -> Result<HttpResponse, Error> {
+    /*
     let mut counter = data.counter.lock().unwrap(); // FIXME: here and below - unwrapping 😱
     *counter += 1;
     println!("Number of requests: {}", counter);
+    */
 
     let body = body.next().await.unwrap()?;
     let iso_data = String::from_utf8(body.to_vec()).unwrap();
@@ -47,7 +50,7 @@ async fn serve_dhi_request(
     let r: DHIRequest = DHIRequest::new(iso_obj);
     let msg = r.serialize().unwrap();
 
-    let res = talk_to_dhi_host(msg).await;
+    let res = talk_to_dhi_host(data, msg).await;
     match res {
         Ok(res) => Ok(HttpResponse::Ok()
             .content_type("application/json")
@@ -72,19 +75,26 @@ async fn serve_dhi_request(
                     .content_type("plain/text")
                     .body("Serialization error"))
             }
-        },
+        }
     }
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    println!("Starting application version TODO");
+
+    let dhi_host = "10.217.13.27:10304";
     let app_state = web::Data::new(AppState {
         counter: Mutex::new(0),
+        host_stream: TcpStream::connect(dhi_host).await?,
     });
+
+    app_state.host_stream.set_nodelay(true)?;
+    println!("Connected to {}", dhi_host);
 
     HttpServer::new(move || {
         App::new()
-            .app_data(app_state.clone())
+            .app_data(app_state.clone()) // TODO: why clone?
             .route("/dhi", web::post().to(serve_dhi_request))
     })
     .workers(4) // TODO: make it configurable
