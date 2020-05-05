@@ -10,7 +10,20 @@ use async_std::prelude::*;
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
+use std::path::PathBuf;
 use std::sync::Mutex;
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+#[structopt(
+    name = "proust",
+    about = "Application for testing Bank credit card processing systems."
+)]
+struct Opt {
+    /// Configuration file
+    #[structopt(parse(from_os_str))]
+    config: PathBuf,
+}
 
 struct AppState {
     counter: Mutex<i32>,
@@ -75,13 +88,14 @@ async fn serve_dhi_request(
                     .content_type("plain/text")
                     .body("Serialization error"))
             }
-        }
+        },
     }
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    println!("Starting application version TODO");
+    let opt = Opt::from_args();
+    println!("{:?}", opt);
 
     let dhi_host = "10.217.13.27:10304";
     let app_state = web::Data::new(AppState {
