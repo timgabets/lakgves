@@ -5,11 +5,11 @@
 
 HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter. The main purpose of the system is testing Issuer Bank systems.
 
-                           +-----------------+                    +--------------------+
-                           |                 | <--  ISO 8583  --> |    Issuer Bank     |
-    HTTP client <--JSON--> |    Lackgves     | <--VISA SMS/DMS--> |   Authorization    |
-                           |                 | <-- Mastercard --> |        Host        |
-                           +-----------------+                    +--------------------+
+                               +-----------------+                        +--------------------+
+                               |                 | <---   ISO 8583   ---> |    Issuer Bank     |
+    HTTP client <--- JSON ---> |    Lackgves     | <--- VISA SMS/DMS ---> |   Authorization    |
+                               |                 | <---  Mastercard  ---> |        Host        |
+                               +-----------------+                        +--------------------+
 
 The application converts JSON payload to ISO8583 message in a proper format, sends it to the Bank host, receives the response and sends it back to the HTTP client.
 In other words, the input JSON like this
@@ -66,7 +66,7 @@ will be converted into one of the [ISO8583](https://en.wikipedia.org/wiki/ISO_85
 Please refer to your [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) specification for the fields meaning and possible values.
 
 ### Usage
-
+Any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lackgves app: 
 > curl -v --header "Content-Type: application/json" --request POST --data '{"i000":"0100", "i002":"553691*****60961", "i003":"300000", "i004":"000000000000", "i014":"2402", "i018":"6011", "i022":"0100", "i023":"000", "i025":"02", "i026":"04", "i032":"437783", "i041":"TERMID01", "i042":"IDDQD MERCH ID", "i043":"IDDQD AM. 341215574     341215574 MSKRU", "i049":"643", "i053":"9801100001000000"}' localhost:8080
 
 The received response may look like this:
