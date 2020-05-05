@@ -12,11 +12,11 @@ HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter. The
                                +-----------------+                        +--------------------+
 
 The application converts JSON payload to ISO8583 message in a proper format, sends it to the Bank host, receives the response and sends it back to the HTTP client.
-In other words, the input JSON like this
+In other words, the input JSON like this (note that the card number in i002 is masked here for security reasons. The real request should contain the full unmacked):
 ```json
 {
 	"i000":"0100",
-	"i002":"553691*****60961", // Masked for security reasons. Use proper PAN in a real life
+	"i002":"553691*****60961",
 	"i003":"300000",
 	"i004":"000000000000",
 	"i014":"2402",
