@@ -23,7 +23,7 @@ pub struct DHIRequest {
 }
 
 impl DHIRequest {
-    pub fn new(iso_obj: Value) -> DHIRequest {
+    pub fn new(iso_obj: Value) -> Self {
         let mut req = DHIRequest {
             iso_fields: iso_obj,
         };
