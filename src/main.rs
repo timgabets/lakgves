@@ -4,6 +4,9 @@ use dhi::{DHIRequest, DHIResponse};
 mod errors;
 use errors::AppError;
 
+mod config;
+use config::AppConfig;
+
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use async_std::net::TcpStream;
 use async_std::prelude::*;
@@ -11,7 +14,6 @@ use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -25,8 +27,8 @@ struct Opt {
     config: PathBuf,
 }
 
+// TODO: Impl AppState
 struct AppState {
-    counter: Mutex<i32>,
     host_stream: TcpStream,
 }
 
@@ -50,12 +52,6 @@ async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
 ) -> Result<HttpResponse, Error> {
-    /*
-    let mut counter = data.counter.lock().unwrap(); // FIXME: here and below - unwrapping 😱
-    *counter += 1;
-    println!("Number of requests: {}", counter);
-    */
-
     let body = body.next().await.unwrap()?;
     let iso_data = String::from_utf8(body.to_vec()).unwrap();
     let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
@@ -88,6 +84,12 @@ async fn serve_dhi_request(
                     .content_type("plain/text")
                     .body("Serialization error"))
             }
+            _ => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Internal error"))
+            }
         },
     }
 }
@@ -95,11 +97,11 @@ async fn serve_dhi_request(
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
-    println!("{:?}", opt);
+    let cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
 
-    let dhi_host = "10.217.13.27:10304";
+    // TODO: iterate through channels
+    let dhi_host = &cfg.channels["dhi"]["host"].as_str().unwrap();
     let app_state = web::Data::new(AppState {
-        counter: Mutex::new(0),
         host_stream: TcpStream::connect(dhi_host).await?,
     });
 
@@ -108,12 +110,12 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(app_state.clone()) // TODO: why clone?
+            .app_data(app_state.clone())
             .route("/dhi", web::post().to(serve_dhi_request))
     })
-    .workers(4) // TODO: make it configurable
-    .keep_alive(75) // <- Set keep-alive to 75 seconds. TODO: make it configurable
-    .bind("127.0.0.1:8080")?
+    .workers(cfg.get_num_of_workers())
+    .keep_alive(cfg.get_listener_keep_alive())
+    .bind(cfg.get_conn_str())?
     .run()
     .await
 }

@@ -1,14 +1,14 @@
 [package]
-name = "proust"
+name = "lakgves"
 description = "Framework for testing Bank credit card processing systems (ISO8583)"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["Tim Gabets <tim@gabets.ru>"]
 edition = "2018"
 readme = "README.md"
 license = "GPL-3.0"
 categories = ["web-programming::http-server", "development-tools", "simulation"]
 keywords = ["iso8583", "card", "processing"]
-repository = "https://github.com/timgabets/proust"
+repository = "https://github.com/timgabets/lakgves"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -25,3 +25,4 @@ serde_derive = "1.0.106"
 serde_json = "1.0"
 serde-xml-rs = "0.4.0"
 structopt = "0.3.14"
+toml = "0.5.6"

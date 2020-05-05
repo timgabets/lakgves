@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use serde_xml_rs::{from_reader, to_string};
+use serde_xml_rs::to_string;
 
 use crate::errors::AppError;
 use std::collections::BTreeMap;
@@ -23,7 +23,7 @@ pub struct DHIRequest {
 }
 
 impl DHIRequest {
-    pub fn new(iso_obj: Value) -> DHIRequest {
+    pub fn new(iso_obj: Value) -> Self {
         let mut req = DHIRequest {
             iso_fields: iso_obj,
         };
@@ -80,6 +80,7 @@ impl DHIResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_xml_rs::from_reader;
 
     #[test]
     fn dhi_request_new_existing_fields() {
