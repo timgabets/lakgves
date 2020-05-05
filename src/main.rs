@@ -100,7 +100,7 @@ async fn main() -> std::io::Result<()> {
     let cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
 
     // TODO: iterate through channels
-    let dhi_host = "10.217.13.27:10304";
+    let dhi_host = &cfg.channels["dhi"]["host"].as_str().unwrap();
     let app_state = web::Data::new(AppState {
         host_stream: TcpStream::connect(dhi_host).await?,
     });

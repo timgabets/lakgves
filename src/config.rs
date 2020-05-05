@@ -30,7 +30,7 @@ struct Channel {
 #[derive(Deserialize, Debug)]
 pub struct AppConfig {
     listener: Listener,
-    channels: Table,
+    pub channels: Table,
 }
 
 impl AppConfig {
