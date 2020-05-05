@@ -12,7 +12,7 @@ n_workers= 4
 	# the entrypoint is http://localhost:8080/dhi
 	[channels.dhi]
 	# Currently DHI (Debit Host Interface) XML is the only supported type
-	type = "DHI-XML"
+	#format = "DHI-XML"
 	# Host to connect to
 	host = "host.bank.com"
 	# TCP port to connect to

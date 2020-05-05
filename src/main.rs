@@ -16,6 +16,7 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use structopt::StructOpt;
+use toml::value::Table;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -98,14 +99,29 @@ async fn serve_dhi_request(
 
 #[derive(Deserialize, Debug)]
 struct AppConfig {
-    listener: ConfigListener,
+    listener: Listener,
+    channels: Table,
 }
 
 #[derive(Deserialize, Debug)]
-struct ConfigListener {
+struct Listener {
     #[serde(rename(deserialize = "listen"))]
     host: String,
     n_workers: u32,
+}
+
+#[derive(Deserialize, Debug)]
+enum ChannelFormat {
+    DhiXml,
+}
+
+#[derive(Deserialize, Debug)]
+struct Channel {
+    //#[serde(rename(deserialize = "type"))]
+    format: ChannelFormat,
+    host: String,
+    port: u16,
+    keep_alive: u32,
 }
 
 #[actix_rt::main]
