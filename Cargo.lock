@@ -908,6 +908,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "lakgves"
+version = "0.1.8"
+dependencies = [
+ "actix-rt",
+ "actix-web",
+ "async-std",
+ "chrono",
+ "futures",
+ "log",
+ "rand",
+ "serde",
+ "serde-xml-rs",
+ "serde_derive",
+ "serde_json",
+ "structopt",
+ "toml",
+]
+
+[[package]]
 name = "language-tags"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1207,25 +1226,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8872cf6f48eee44265156c111456a700ab3483686b3f96df4cf5481c89157319"
 dependencies = [
  "unicode-xid",
-]
-
-[[package]]
-name = "proust"
-version = "0.1.8"
-dependencies = [
- "actix-rt",
- "actix-web",
- "async-std",
- "chrono",
- "futures",
- "log",
- "rand",
- "serde",
- "serde-xml-rs",
- "serde_derive",
- "serde_json",
- "structopt",
- "toml",
 ]
 
 [[package]]

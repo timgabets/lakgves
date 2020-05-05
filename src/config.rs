@@ -9,7 +9,7 @@ use toml::value::Table;
 struct Listener {
     #[serde(rename(deserialize = "listen"))]
     host: String,
-    n_workers: u32,
+    n_workers: usize,
 }
 
 #[derive(Deserialize, Debug)]
@@ -40,6 +40,10 @@ impl AppConfig {
         let app_cfg: AppConfig = toml::from_slice(&buf)?;
         Ok(app_cfg)
     }
+
+    pub fn get_num_of_workers(&self) -> usize {
+        self.listener.n_workers
+    }
 }
 
 #[cfg(test)]
@@ -53,6 +57,7 @@ mod tests {
 
         assert_eq!(app_cfg.listener.host, "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);
+        assert_eq!(app_cfg.get_num_of_workers(), 4);
 
         assert!(app_cfg.channels["dhi"].is_table());
         assert_eq!(

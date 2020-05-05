@@ -99,9 +99,10 @@ async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
     println!("{:?}", opt.config);
 
-    let app_cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
-    println!("{:?}", app_cfg);
+    let cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
+    println!("{:?}", cfg);
 
+    // TODO: iterate through channels
     let dhi_host = "10.217.13.27:10304";
     let app_state = web::Data::new(AppState {
         host_stream: TcpStream::connect(dhi_host).await?,
@@ -115,7 +116,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(app_state.clone()) // TODO: why clone?
             .route("/dhi", web::post().to(serve_dhi_request))
     })
-    .workers(4) // TODO: make it configurable
+    .workers(cfg.get_num_of_workers())
     .keep_alive(75) // <- Set keep-alive to 75 seconds. TODO: make it configurable
     .bind("127.0.0.1:8080")?
     .run()
