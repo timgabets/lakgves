@@ -8,8 +8,11 @@ use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use futures::StreamExt;
+use serde_derive::Deserialize;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
+use std::fs::File;
+use std::io::prelude::*;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use structopt::StructOpt;
@@ -25,6 +28,7 @@ struct Opt {
     config: PathBuf,
 }
 
+// TODO: Impl AppState
 struct AppState {
     counter: Mutex<i32>,
     host_stream: TcpStream,
@@ -92,10 +96,28 @@ async fn serve_dhi_request(
     }
 }
 
+#[derive(Deserialize, Debug)]
+struct AppConfig {
+    listener: ConfigListener,
+}
+
+#[derive(Deserialize, Debug)]
+struct ConfigListener {
+    #[serde(rename(deserialize = "listen"))]
+    host: String,
+    n_workers: u32,
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
-    println!("{:?}", opt);
+    println!("{:?}", opt.config);
+
+    let mut fd = File::open(opt.config)?;
+    let mut buf = Vec::new();
+    fd.read_to_end(&mut buf)?;
+    let app_cfg: AppConfig = toml::from_slice(&buf)?;
+    println!("{:?}", app_cfg);
 
     let dhi_host = "10.217.13.27:10304";
     let app_state = web::Data::new(AppState {
