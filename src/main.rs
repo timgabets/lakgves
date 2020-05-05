@@ -117,7 +117,7 @@ async fn main() -> std::io::Result<()> {
             .route("/dhi", web::post().to(serve_dhi_request))
     })
     .workers(cfg.get_num_of_workers())
-    .keep_alive(75) // <- Set keep-alive to 75 seconds. TODO: make it configurable
+    .keep_alive(cfg.get_listener_keep_alive())
     .bind("127.0.0.1:8080")?
     .run()
     .await

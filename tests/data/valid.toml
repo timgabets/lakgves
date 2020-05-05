@@ -2,6 +2,7 @@
 [listener]
 listen = "localhost:8080"
 n_workers= 4
+keep_alive = 300
 
 [channels]
 	[channels.dhi]

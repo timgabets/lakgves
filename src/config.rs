@@ -10,6 +10,7 @@ struct Listener {
     #[serde(rename(deserialize = "listen"))]
     host: String,
     n_workers: usize,
+    keep_alive: usize,
 }
 
 #[derive(Deserialize, Debug)]
@@ -23,7 +24,7 @@ struct Channel {
     format: ChannelFormat,
     host: String,
     port: u16,
-    keep_alive: u32,
+    keep_alive: usize,
 }
 
 #[derive(Deserialize, Debug)]
@@ -44,6 +45,10 @@ impl AppConfig {
     pub fn get_num_of_workers(&self) -> usize {
         self.listener.n_workers
     }
+
+    pub fn get_listener_keep_alive(&self) -> usize {
+        self.listener.keep_alive
+    }
 }
 
 #[cfg(test)]
@@ -58,6 +63,8 @@ mod tests {
         assert_eq!(app_cfg.listener.host, "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);
         assert_eq!(app_cfg.get_num_of_workers(), 4);
+        assert_eq!(app_cfg.listener.keep_alive, 300);
+        assert_eq!(app_cfg.get_listener_keep_alive(), 300);
 
         assert!(app_cfg.channels["dhi"].is_table());
         assert_eq!(

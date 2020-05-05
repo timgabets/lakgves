@@ -7,6 +7,9 @@ listen = "localhost:8080"
 # If not specified or 0, the number of logical CPUs will be used
 n_workers= 4
 
+# Listener connections keep alive (seconds)
+keep_alive = 60
+
 [channels]
 	# NOTE: The channel name will be used as API entrypoint. E.g. for the channel below
 	# the entrypoint is http://localhost:8080/dhi
