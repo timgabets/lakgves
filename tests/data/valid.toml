@@ -1,0 +1,15 @@
+
+[listener]
+listen = "localhost:8080"
+n_workers= 4
+
+[channels]
+	[channels.dhi]
+	host = "host.bank.com"
+	port = 10309
+	keep_alive = 75
+
+	[channels.vsms]
+	host = "visa.bank.com"
+	port = 10303
+	keep_alive = 75
