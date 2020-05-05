@@ -33,7 +33,7 @@ pub struct AppConfig {
 }
 
 impl AppConfig {
-    pub fn new(conf_file: String) -> Result<Self, AppError> {
+    pub fn new(conf_file: &str) -> Result<Self, AppError> {
         let mut buf = Vec::new();
         let mut fd = File::open(conf_file)?;
         fd.read_to_end(&mut buf)?;
@@ -49,7 +49,7 @@ mod tests {
 
     #[test]
     fn config_parse_valid_config() {
-        let app_cfg = AppConfig::new(String::from("tests/data/valid.toml")).unwrap();
+        let app_cfg = AppConfig::new("tests/data/valid.toml").unwrap();
 
         assert_eq!(app_cfg.listener.host, "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);

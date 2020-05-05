@@ -13,8 +13,6 @@ use async_std::prelude::*;
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
-use std::fs::File;
-use std::io::prelude::*;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -101,10 +99,7 @@ async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
     println!("{:?}", opt.config);
 
-    let mut fd = File::open(opt.config)?;
-    let mut buf = Vec::new();
-    fd.read_to_end(&mut buf)?;
-    let app_cfg = AppConfig::new(String::from("etc/config.toml")).unwrap();
+    let app_cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
     println!("{:?}", app_cfg);
 
     let dhi_host = "10.217.13.27:10304";
