@@ -110,7 +110,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(app_state.clone()) // TODO: why clone?
+            .app_data(app_state.clone())
             .route("/dhi", web::post().to(serve_dhi_request))
     })
     .workers(cfg.get_num_of_workers())
