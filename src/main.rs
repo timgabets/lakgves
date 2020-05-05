@@ -16,7 +16,6 @@ use serde_xml_rs::from_reader;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -32,7 +31,6 @@ struct Opt {
 
 // TODO: Impl AppState
 struct AppState {
-    counter: Mutex<i32>,
     host_stream: TcpStream,
 }
 
@@ -56,12 +54,6 @@ async fn serve_dhi_request(
     data: web::Data<AppState>,
     mut body: web::Payload,
 ) -> Result<HttpResponse, Error> {
-    /*
-    let mut counter = data.counter.lock().unwrap(); // FIXME: here and below - unwrapping 😱
-    *counter += 1;
-    println!("Number of requests: {}", counter);
-    */
-
     let body = body.next().await.unwrap()?;
     let iso_data = String::from_utf8(body.to_vec()).unwrap();
     let iso_obj: Value = serde_json::from_str(&iso_data).unwrap();
@@ -94,6 +86,12 @@ async fn serve_dhi_request(
                     .content_type("plain/text")
                     .body("Serialization error"))
             }
+            _ => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Internal error"))
+            }
         },
     }
 }
@@ -106,12 +104,11 @@ async fn main() -> std::io::Result<()> {
     let mut fd = File::open(opt.config)?;
     let mut buf = Vec::new();
     fd.read_to_end(&mut buf)?;
-    let app_cfg: AppConfig = toml::from_slice(&buf)?;
+    let app_cfg = AppConfig::new(String::from("etc/config.toml")).unwrap();
     println!("{:?}", app_cfg);
 
     let dhi_host = "10.217.13.27:10304";
     let app_state = web::Data::new(AppState {
-        counter: Mutex::new(0),
         host_stream: TcpStream::connect(dhi_host).await?,
     });
 

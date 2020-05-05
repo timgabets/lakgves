@@ -1,4 +1,8 @@
+use crate::errors::AppError;
+
 use serde_derive::Deserialize;
+use std::fs::File;
+use std::io::prelude::*;
 use toml::value::Table;
 
 #[derive(Deserialize, Debug)]
@@ -28,25 +32,25 @@ pub struct AppConfig {
     channels: Table,
 }
 
+impl AppConfig {
+    pub fn new(conf_file: String) -> Result<Self, AppError> {
+        let mut buf = Vec::new();
+        let mut fd = File::open(conf_file)?;
+        fd.read_to_end(&mut buf)?;
+        let app_cfg: AppConfig = toml::from_slice(&buf)?;
+        Ok(app_cfg)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::prelude::*;
     use toml::value::Value;
 
     #[test]
     fn config_parse_valid_config() {
-        let mut buf = Vec::new();
-        File::open("tests/data/valid.toml")
-            .unwrap()
-            .read_to_end(&mut buf)
-            .unwrap();
+        let app_cfg = AppConfig::new(String::from("tests/data/valid.toml")).unwrap();
 
-        let app_cfg: AppConfig = toml::from_slice(&buf).unwrap();
-
-        // AppConfig { listener: Listener { host: "localhost:8080", n_workers: 4 },
-        // channels: {"dhi": Table({"host": String("host.bank.com"), "keep_alive": Integer(75), "port": Integer(10309)})} }
         assert_eq!(app_cfg.listener.host, "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);
 
