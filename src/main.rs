@@ -4,11 +4,13 @@ use dhi::{DHIRequest, DHIResponse};
 mod errors;
 use errors::AppError;
 
+mod config;
+use config::AppConfig;
+
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use futures::StreamExt;
-use serde_derive::Deserialize;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
 use std::fs::File;
@@ -16,7 +18,6 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use structopt::StructOpt;
-use toml::value::Table;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -95,33 +96,6 @@ async fn serve_dhi_request(
             }
         },
     }
-}
-
-#[derive(Deserialize, Debug)]
-struct AppConfig {
-    listener: Listener,
-    channels: Table,
-}
-
-#[derive(Deserialize, Debug)]
-struct Listener {
-    #[serde(rename(deserialize = "listen"))]
-    host: String,
-    n_workers: u32,
-}
-
-#[derive(Deserialize, Debug)]
-enum ChannelFormat {
-    DhiXml,
-}
-
-#[derive(Deserialize, Debug)]
-struct Channel {
-    //#[serde(rename(deserialize = "type"))]
-    format: ChannelFormat,
-    host: String,
-    port: u16,
-    keep_alive: u32,
 }
 
 #[actix_rt::main]
