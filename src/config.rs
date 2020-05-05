@@ -42,7 +42,7 @@ impl AppConfig {
         Ok(app_cfg)
     }
 
-    pub fn get_listen_to(&self) -> &str {
+    pub fn get_conn_str(&self) -> &str {
         &self.listener.host
     }
 
@@ -65,7 +65,7 @@ mod tests {
         let app_cfg = AppConfig::new("tests/data/valid.toml").unwrap();
 
         assert_eq!(app_cfg.listener.host, "localhost:8080");
-        assert_eq!(app_cfg.get_listen_to(), "localhost:8080");
+        assert_eq!(app_cfg.get_conn_str(), "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);
         assert_eq!(app_cfg.get_num_of_workers(), 4);
         assert_eq!(app_cfg.listener.keep_alive, 300);
@@ -74,17 +74,15 @@ mod tests {
         assert!(app_cfg.channels["dhi"].is_table());
         assert_eq!(
             app_cfg.channels["dhi"]["host"],
-            Value::from("host.bank.com")
+            Value::from("host.bank.com:10309")
         );
         assert_eq!(app_cfg.channels["dhi"]["keep_alive"], Value::from(75));
-        assert_eq!(app_cfg.channels["dhi"]["port"], Value::from(10309));
 
         assert!(app_cfg.channels["vsms"].is_table());
         assert_eq!(
             app_cfg.channels["vsms"]["host"],
-            Value::from("visa.bank.com")
+            Value::from("visa.bank.com:10303")
         );
         assert_eq!(app_cfg.channels["vsms"]["keep_alive"], Value::from(75));
-        assert_eq!(app_cfg.channels["vsms"]["port"], Value::from(10303));
     }
 }

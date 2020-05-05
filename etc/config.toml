@@ -17,8 +17,6 @@ keep_alive = 60
 	# Currently DHI (Debit Host Interface) XML is the only supported type
 	#format = "DHI-XML"
 	# Host to connect to
-	host = "10.217.13.27"
-	# TCP port to connect to
-	port = 10309
+	host = "10.217.13.27:10309"
 	# Connection keep alive (seconds)
 	keep_alive = 75

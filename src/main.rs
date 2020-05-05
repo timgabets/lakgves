@@ -97,10 +97,7 @@ async fn serve_dhi_request(
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
-    println!("{:?}", opt.config);
-
     let cfg = AppConfig::new(opt.config.to_str().unwrap()).unwrap();
-    println!("{:?}", cfg);
 
     // TODO: iterate through channels
     let dhi_host = "10.217.13.27:10304";
@@ -118,7 +115,7 @@ async fn main() -> std::io::Result<()> {
     })
     .workers(cfg.get_num_of_workers())
     .keep_alive(cfg.get_listener_keep_alive())
-    .bind(cfg.get_listen_to())?
+    .bind(cfg.get_conn_str())?
     .run()
     .await
 }
