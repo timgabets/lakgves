@@ -118,7 +118,7 @@ async fn main() -> std::io::Result<()> {
     })
     .workers(cfg.get_num_of_workers())
     .keep_alive(cfg.get_listener_keep_alive())
-    .bind("127.0.0.1:8080")?
+    .bind(cfg.get_listen_to())?
     .run()
     .await
 }

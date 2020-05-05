@@ -42,6 +42,10 @@ impl AppConfig {
         Ok(app_cfg)
     }
 
+    pub fn get_listen_to(&self) -> &str {
+        &self.listener.host
+    }
+
     pub fn get_num_of_workers(&self) -> usize {
         self.listener.n_workers
     }
@@ -61,6 +65,7 @@ mod tests {
         let app_cfg = AppConfig::new("tests/data/valid.toml").unwrap();
 
         assert_eq!(app_cfg.listener.host, "localhost:8080");
+        assert_eq!(app_cfg.get_listen_to(), "localhost:8080");
         assert_eq!(app_cfg.listener.n_workers, 4);
         assert_eq!(app_cfg.get_num_of_workers(), 4);
         assert_eq!(app_cfg.listener.keep_alive, 300);
