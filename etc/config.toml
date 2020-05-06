@@ -14,9 +14,12 @@ keep_alive = 60
 	# NOTE: The channel name will be used as API entrypoint. E.g. for the channel below
 	# the entrypoint is http://localhost:8080/dhi
 	[channels.dhi]
+
 	# Currently DHI (Debit Host Interface) XML is the only supported type
-	#format = "DHI-XML"
+	# format = "DHI-XML"
+
 	# Host to connect to
 	host = "10.217.13.27:10304"
+
 	# Connection keep alive (seconds)
 	keep_alive = 75
