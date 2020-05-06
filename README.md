@@ -67,9 +67,10 @@ will be converted into one of the [ISO8583](https://en.wikipedia.org/wiki/ISO_85
 Please refer to your [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) specification for the fields meaning and possible values.
 
 ### Usage
-Any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lackgves app: 
-> curl -v --header "Content-Type: application/json" --request POST --data '{"i000":"0100", "i002":"443322******0961", "i003":"300000", "i004":"000000000000", "i014":"****", "i018":"6011", "i022":"0100", "i023":"000", "i025":"02", "i026":"04", "i032":"999999", "i041":"TERMID01", "i042":"IDDQD MERCH ID", "i043":"IDDQD AM. 341215574     341215574 MSKRU", "i049":"643", "i053":"9801100001000000"}' localhost:8080
-
+Any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lackgves app:
+```
+curl -v --header "Content-Type: application/json" --request POST --data '{"i000":"0100", "i002":"443322******0961", "i003":"300000", "i004":"000000000000", "i014":"****", "i018":"6011", "i022":"0100", "i023":"000", "i025":"02", "i026":"04", "i032":"999999", "i041":"TERMID01", "i042":"IDDQD MERCH ID", "i043":"IDDQD AM. 341215574     341215574 MSKRU", "i049":"643", "i053":"9801100001000000"}' localhost:8080
+```
 The received response may look like this:
 ```
 < HTTP/1.1 200 OK
