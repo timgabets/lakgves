@@ -8,7 +8,10 @@ keep_alive = 300
 	[channels.dhi]
 	host = "host.bank.com:10309"
 	keep_alive = 75
+	timeout = 30
 
 	[channels.vsms]
 	host = "visa.bank.com:10303"
 	keep_alive = 75
+	timeout = 20
+

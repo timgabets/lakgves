@@ -39,6 +39,7 @@ async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIR
     let mut s = &data.host_stream;
     let mut buffer = [0; 8192];
 
+    // TODO: timeout from app state
     io::timeout(Duration::from_secs(5), async {
         s.write_all(&msg.as_bytes()).await?;
         s.read(&mut buffer).await?;
@@ -72,7 +73,7 @@ async fn serve_dhi_request(
         Err(err) => match err {
             AppError::IoError(err) => {
                 println!("Error: {:?}", err);
-                Ok(HttpResponse::ServiceUnavailable()
+                Ok(HttpResponse::GatewayTimeout()
                     .content_type("plain/text")
                     .body("Error communicating with DHI host"))
             }
