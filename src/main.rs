@@ -8,12 +8,14 @@ mod config;
 use config::AppConfig;
 
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use async_std::io;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
 use std::path::PathBuf;
+use std::time::Duration;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -35,12 +37,14 @@ struct AppState {
 /// Asynchronously exchange data with DHI host
 async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIResponse, AppError> {
     let mut s = &data.host_stream;
-
-    s.write_all(&msg.as_bytes()).await?;
-    println!("{}", msg);
-
     let mut buffer = [0; 8192];
-    s.read(&mut buffer).await?;
+
+    io::timeout(Duration::from_secs(5), async {
+        s.write_all(&msg.as_bytes()).await?;
+        s.read(&mut buffer).await?;
+        Ok(())
+    })
+    .await?;
 
     // The first 5 bytes are the message length
     let response: DHIResponse = from_reader(&buffer[5..])?;
