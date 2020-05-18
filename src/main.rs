@@ -1,6 +1,9 @@
 mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
+mod spxml;
+use spxml::SPMessage;
+
 mod errors;
 use errors::AppError;
 
