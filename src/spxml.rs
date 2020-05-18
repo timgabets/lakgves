@@ -1,7 +1,10 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+use crate::errors::AppError;
+
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename(deserialize = "IRIS"))]
+#[serde(rename(serialize = "IRIS"))]
 #[serde(rename_all = "camelCase")]
 pub struct SPMessage {
     msg_sub_type: String,
@@ -15,6 +18,13 @@ pub struct SPMessage {
     sms_id: String,
     timestamp: String,
     vlr: String,
+}
+
+impl SPMessage {
+    pub fn serialize(&self) -> Result<String, AppError> {
+        let serialized = serde_xml_rs::to_string(&self)?;
+        Ok(serialized)
+    }
 }
 
 #[cfg(test)]
@@ -54,5 +64,27 @@ mod tests {
         assert_eq!(msg.sms_id, "aaa");
         assert_eq!(msg.timestamp, "2020-04-27 12:00:00");
         assert_eq!(msg.vlr, "36028797018963968");
+    }
+
+    #[test]
+    fn dummy_serialization() {
+        let msg = SPMessage {
+            msg_sub_type: String::from("iddqd"),
+            msg_type: String::from("iddqd"),
+            msisdn_a: String::from("iddqd"),
+            msisdn_b: String::from("iddqd"),
+            part_number: String::from("iddqd"),
+            session_id: String::from("iddqd"),
+            siebel_id: String::from("iddqd"),
+            sms_body: String::from("iddqd"),
+            sms_id: String::from("iddqd"),
+            timestamp: String::from("iddqd"),
+            vlr: String::from("iddqd"),
+        };
+        let serialized = msg.serialize().unwrap();
+        assert_eq!(
+            serialized,
+            r#"<IRIS><msgSubType>iddqd</msgSubType><msgType>iddqd</msgType><msisdnA>iddqd</msisdnA><msisdnB>iddqd</msisdnB><partNumber>iddqd</partNumber><sessionId>iddqd</sessionId><siebelId>iddqd</siebelId><smsBody>iddqd</smsBody><smsId>iddqd</smsId><timestamp>iddqd</timestamp><vlr>iddqd</vlr></IRIS>"#
+        );
     }
 }
