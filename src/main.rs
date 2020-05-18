@@ -7,7 +7,7 @@ mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
 mod spxml;
-use spxml::SPMessage;
+use spxml::SPRequest;
 
 mod errors;
 use errors::AppError;
