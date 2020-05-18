@@ -57,8 +57,10 @@ pub struct SPRequest {
 
 impl SPRequest {
     pub fn serialize(&self) -> Result<String, AppError> {
-        let serialized = to_string(self).unwrap();
-        Ok(serialized)
+        let s = to_string(self).unwrap();
+        // Removing leading <?xml version="1.0" encoding="utf-8"?>
+        // TODO: more sophisticated removal solution using xml-rs
+        Ok(s.replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))
     }
 }
 
@@ -126,7 +128,7 @@ mod tests {
 
         assert_eq!(
             msg.serialize().unwrap(),
-            r#"<?xml version="1.0" encoding="utf-8"?><IRIS Version="1" Message="ModelRequest" MessageTypeId="60" MessageId="0af87c75503b4401"><msgSubType>iddqd</msgSubType><msgType>aaaa</msgType><msisdnA>231231</msisdnA><msisdnB>54656456</msisdnB><partNumber>127</partNumber><sessionId>bbbbb</sessionId><siebelId>ccccc</siebelId><smsBody>ddddd</smsBody><smsId>eee</smsId><timestamp>2020-04-27 12:00:00</timestamp><vlr>36028797018963968</vlr></IRIS>"#
+            r#"<IRIS Version="1" Message="ModelRequest" MessageTypeId="60" MessageId="0af87c75503b4401"><msgSubType>iddqd</msgSubType><msgType>aaaa</msgType><msisdnA>231231</msisdnA><msisdnB>54656456</msisdnB><partNumber>127</partNumber><sessionId>bbbbb</sessionId><siebelId>ccccc</siebelId><smsBody>ddddd</smsBody><smsId>eee</smsId><timestamp>2020-04-27 12:00:00</timestamp><vlr>36028797018963968</vlr></IRIS>"#
         );
     }
 
