@@ -56,9 +56,11 @@ pub struct SPRequest {
 }
 
 impl SPRequest {
-    //    pub fn new(_s: String) -> Self {
-    //
-    //    }
+    pub fn new(s: String) -> Self {
+        // TODO: from bytes, not from string
+        let req: SPRequest = from_reader(s.as_bytes()).unwrap();
+        req
+    }
 
     pub fn serialize(&self) -> Result<String, AppError> {
         let s = to_string(self).unwrap();
@@ -154,8 +156,8 @@ mod tests {
         </IRIS>"#;
 
         let req: SPRequest = from_reader(s.as_bytes()).unwrap();
-        assert_eq!(req.version, 1);
 
+        assert_eq!(req.version, 1);
         assert_eq!(req.message, "ModelRequest");
         assert_eq!(req.message_type_id, 60);
         assert_eq!(req.message_id, "0af87c75503b4401");
@@ -170,6 +172,27 @@ mod tests {
         assert_eq!(req.sms_id, "eee");
         assert_eq!(req.timestamp, "2020-04-27 12:00:00");
         assert_eq!(req.vlr, "36028797018963968");
+    }
+
+    #[test]
+    fn sp_request_new() {
+        let s = r#"
+        <IRIS Version="1" Message="ModelRequest" MessageTypeId="60" MessageId="0af87c75503b4401">
+            <msgSubType>iddqd</msgSubType>
+            <msgType>aaaa</msgType>
+            <msisdnA>231231</msisdnA>
+            <msisdnB>54656456</msisdnB>
+            <partNumber>127</partNumber>
+            <sessionId>bbbbb</sessionId>
+            <siebelId>ccccc</siebelId>
+            <smsBody>ddddd</smsBody>
+            <smsId>eee</smsId>
+            <timestamp>2020-04-27 12:00:00</timestamp>
+            <vlr>36028797018963968</vlr>
+        </IRIS>"#;
+
+        let req = SPRequest::new(s.to_string());
+        assert_eq!(req.version, 1);
     }
 
     #[test]
