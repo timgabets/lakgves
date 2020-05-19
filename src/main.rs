@@ -7,7 +7,7 @@ mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
 mod spxml;
-use spxml::SPRequest;
+use spxml::{SPRequest, SPResponse};
 
 mod errors;
 use errors::AppError;
@@ -60,6 +60,23 @@ async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIR
     Ok(response)
 }
 
+/// Asynchronously exchange data with SP host
+async fn talk_to_sp_host(data: web::Data<AppState>, msg: String) -> Result<SPResponse, AppError> {
+    let mut s = &data.host_stream;
+    let mut buffer = [0; 8192];
+
+    // TODO: timeout from app state
+    io::timeout(Duration::from_secs(5), async {
+        s.write_all(&msg.as_bytes()).await?;
+        s.read(&mut buffer).await?;
+        Ok(())
+    })
+    .await?;
+
+    let response = SPResponse::new(&buffer);
+    Ok(response)
+}
+
 // TODO: write tests to cover all the unwrapping
 async fn serve_dhi_request(
     data: web::Data<AppState>,
@@ -107,6 +124,60 @@ async fn serve_dhi_request(
     }
 }
 
+// TODO: write tests to cover all the unwrapping
+async fn serve_sp_request(
+    data: web::Data<AppState>,
+    mut body: web::Payload,
+) -> Result<HttpResponse, Error> {
+    let body = body.next().await.unwrap()?;
+    let mut req = SPRequest::new(&body);
+
+    // We've got a deserialized request, and can apply some logic
+    println!("{:?}", req);
+
+    // The logic - generating and assinging Message ID
+    req.gen_message_id();
+
+    let msg = req.serialize().unwrap();
+
+    // Sending stuff
+    let res = talk_to_sp_host(data, msg).await;
+
+    // Checking result of talking to host
+    match res {
+        Ok(res) => Ok(HttpResponse::Ok()
+            .content_type("text/xml")
+            .header("X-Hdr", "sample")
+            .body(res.serialize().unwrap())),
+        Err(err) => match err {
+            AppError::IoError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::GatewayTimeout()
+                    .content_type("plain/text")
+                    .body("Error communicating with SP host"))
+            }
+            AppError::ParseError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Error processing data from SP host"))
+            }
+            AppError::SerializeError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Serialization error"))
+            }
+            _ => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Internal error"))
+            }
+        },
+    }
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
@@ -125,6 +196,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .route("/dhi", web::post().to(serve_dhi_request))
+            .route("/", web::post().to(serve_sp_request))
     })
     .workers(cfg.get_num_of_workers())
     .keep_alive(cfg.get_listener_keep_alive())
