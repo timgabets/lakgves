@@ -5,7 +5,7 @@ use yaserde::{YaDeserialize, YaSerialize};
 
 use crate::errors::AppError;
 
-#[derive(YaSerialize, PartialEq, Debug)]
+#[derive(YaSerialize, YaDeserialize, PartialEq, Debug)]
 #[yaserde(rename = "IRIS")]
 pub struct SPRequest {
     #[yaserde(attribute)]
@@ -56,6 +56,10 @@ pub struct SPRequest {
 }
 
 impl SPRequest {
+    //    pub fn new(_s: String) -> Self {
+    //
+    //    }
+
     pub fn serialize(&self) -> Result<String, AppError> {
         let s = to_string(self).unwrap();
         // Removing leading <?xml version="1.0" encoding="utf-8"?>
@@ -133,7 +137,43 @@ mod tests {
     }
 
     #[test]
-    fn dummy_deserialization() {
+    fn dummy_request_deserialization() {
+        let s = r#"
+        <IRIS Version="1" Message="ModelRequest" MessageTypeId="60" MessageId="0af87c75503b4401">
+            <msgSubType>iddqd</msgSubType>
+            <msgType>aaaa</msgType>
+            <msisdnA>231231</msisdnA>
+            <msisdnB>54656456</msisdnB>
+            <partNumber>127</partNumber>
+            <sessionId>bbbbb</sessionId>
+            <siebelId>ccccc</siebelId>
+            <smsBody>ddddd</smsBody>
+            <smsId>eee</smsId>
+            <timestamp>2020-04-27 12:00:00</timestamp>
+            <vlr>36028797018963968</vlr>
+        </IRIS>"#;
+
+        let req: SPRequest = from_reader(s.as_bytes()).unwrap();
+        assert_eq!(req.version, 1);
+
+        assert_eq!(req.message, "ModelRequest");
+        assert_eq!(req.message_type_id, 60);
+        assert_eq!(req.message_id, "0af87c75503b4401");
+        assert_eq!(req.msg_sub_type, "iddqd");
+        assert_eq!(req.msg_type, "aaaa");
+        assert_eq!(req.msisdn_a, 231231);
+        assert_eq!(req.msisdn_b, 54656456);
+        assert_eq!(req.part_number, 127);
+        assert_eq!(req.session_id, "bbbbb");
+        assert_eq!(req.siebel_id, "ccccc");
+        assert_eq!(req.sms_body, "ddddd");
+        assert_eq!(req.sms_id, "eee");
+        assert_eq!(req.timestamp, "2020-04-27 12:00:00");
+        assert_eq!(req.vlr, "36028797018963968");
+    }
+
+    #[test]
+    fn dummy_responce_deserialization() {
         let s = r##"
         <IRIS Version="1" Message="ModelResponse" IrisInstance="INSTANCE_1_(DS-PR-" MessageTypeId="60" SystemTime="2020-05-18 23:39:19" UniqueRecordId="1882261" MessageId="0af87c75503b4401" Merging="0" InstanceStatus="Ok" Latency="1.15" ErrorCode="0"></IRIS>
         "##;
@@ -152,4 +192,3 @@ mod tests {
         assert_eq!(resp.err_code, 0);
     }
 }
-
