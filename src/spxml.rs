@@ -4,6 +4,7 @@ use yaserde::ser::to_string;
 use yaserde::{YaDeserialize, YaSerialize};
 
 use crate::errors::AppError;
+use rand::Rng;
 
 #[derive(YaSerialize, YaDeserialize, PartialEq, Debug)]
 #[yaserde(rename = "IRIS")]
@@ -66,6 +67,14 @@ impl SPRequest {
         // Removing leading <?xml version="1.0" encoding="utf-8"?>
         // TODO: more sophisticated removal solution using xml-rs
         Ok(s.replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))
+    }
+
+    pub fn gen_message_id(&mut self) {
+        let mut rng = rand::thread_rng();
+        let msg_id: u64 = rng.gen();
+        let msg_id = format!("{:08x}", msg_id);
+        msg_id.to_string();
+        self.message_id = msg_id.to_string();
     }
 }
 
@@ -168,7 +177,7 @@ mod tests {
             <vlr>36028797018963968</vlr>
         </IRIS>"#;
 
-        let req: SPRequest = from_reader(s.as_bytes()).unwrap();
+        let mut req: SPRequest = from_reader(s.as_bytes()).unwrap();
 
         assert_eq!(req.version, 1);
         assert_eq!(req.message, "ModelRequest");
@@ -185,6 +194,12 @@ mod tests {
         assert_eq!(req.sms_id, "eee");
         assert_eq!(req.timestamp, "2020-04-27 12:00:00");
         assert_eq!(req.vlr, "36028797018963968");
+
+        req.gen_message_id();
+        assert_ne!(
+            req.message_id, "0af87c75503b4401",
+            "Message ID should have been changed"
+        );
     }
 
     #[test]
