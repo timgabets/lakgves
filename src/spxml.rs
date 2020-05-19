@@ -109,8 +109,8 @@ pub struct SPResponse {
 }
 
 impl SPResponse {
-    pub fn new(s: String) -> Self {
-        let resp: SPResponse = from_reader(s.as_bytes()).unwrap();
+    pub fn new(s: &[u8]) -> Self {
+        let resp: SPResponse = from_reader(s).unwrap();
         resp
     }
 }
@@ -208,7 +208,7 @@ mod tests {
         <IRIS Version="1" Message="ModelResponse" IrisInstance="INSTANCE_1_(DS-PR-" MessageTypeId="60" SystemTime="2020-05-18 23:39:19" UniqueRecordId="1882261" MessageId="0af87c75503b4401" Merging="0" InstanceStatus="Ok" Latency="1.15" ErrorCode="0"></IRIS>
         "##;
 
-        let resp = SPResponse::new(s.to_string());
+        let resp = SPResponse::new(s.as_bytes());
         assert_eq!(resp.version, 1);
         assert_eq!(resp.message, "ModelResponse");
         assert_eq!(resp.iris_instance, "INSTANCE_1_(DS-PR-");
