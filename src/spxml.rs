@@ -56,9 +56,8 @@ pub struct SPRequest {
 }
 
 impl SPRequest {
-    pub fn new(s: String) -> Self {
-        // TODO: from bytes, not from string
-        let req: SPRequest = from_reader(s.as_bytes()).unwrap();
+    pub fn new(s: &[u8]) -> Self {
+        let req: SPRequest = from_reader(s).unwrap();
         req
     }
 
@@ -198,7 +197,7 @@ mod tests {
             <vlr>36028797018963968</vlr>
         </IRIS>"#;
 
-        let req = SPRequest::new(s.to_string());
+        let req = SPRequest::new(s.as_bytes());
         assert_eq!(req.version, 1);
     }
 
