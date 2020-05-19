@@ -1,4 +1,4 @@
-## LACKGVES
+## LAKGVES
 [![Build Status](https://travis-ci.org/timgabets/lakgves.svg?branch=master)](https://travis-ci.org/timgabets/lakgves)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -8,7 +8,7 @@ HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter. The
 
                                +-----------------+                        +--------------------+
                                |                 | <---   ISO 8583   ---> |    Issuer Bank     |
-    HTTP client <--- JSON ---> |    Lackgves     | <--- VISA SMS/DMS ---> |   Authorization    |
+    HTTP client <--- JSON ---> |     Lakgves     | <--- VISA SMS/DMS ---> |   Authorization    |
                                |                 | <---  Mastercard  ---> |        Host        |
                                +-----------------+                        +--------------------+
 
@@ -71,7 +71,7 @@ Please refer to your [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) specifica
 cargo run etc/config.toml
 ```
 
-After that, any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lackgves app:
+After that, any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lakgves app:
 ```
 curl -v --header "Content-Type: application/json" --request POST --data '{"i000":"0100", "i002":"443322******0961", "i003":"300000", "i004":"000000000000", "i014":"****", "i018":"6011", "i022":"0100", "i023":"000", "i025":"02", "i026":"04", "i032":"999999", "i041":"TERMID01", "i042":"IDDQD MERCH ID", "i043":"IDDQD AM. 341215574     341215574 MSKRU", "i049":"643", "i053":"9801100001000000"}' localhost:8080
 ```
