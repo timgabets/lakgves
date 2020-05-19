@@ -69,7 +69,7 @@ impl SPRequest {
     }
 }
 
-#[derive(YaDeserialize, PartialEq, Debug)]
+#[derive(YaSerialize, YaDeserialize, PartialEq, Debug)]
 #[yaserde(rename = "IRIS")]
 pub struct SPResponse {
     #[yaserde(attribute)]
@@ -111,6 +111,13 @@ impl SPResponse {
     pub fn new(s: &[u8]) -> Self {
         let resp: SPResponse = from_reader(s).unwrap();
         resp
+    }
+
+    pub fn serialize(&self) -> Result<String, AppError> {
+        let s = to_string(self).unwrap();
+        // Removing leading <?xml version="1.0" encoding="utf-8"?>
+        // TODO: more sophisticated removal solution using xml-rs
+        Ok(s.replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))
     }
 }
 
