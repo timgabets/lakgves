@@ -133,10 +133,10 @@ async fn serve_sp_request(
     let mut req = SPRequest::new(&body);
 
     // We've got a deserialized request, and can apply some logic
-    println!("{:?}", req);
-
     // The logic - generating and assinging Message ID
     req.gen_message_id();
+
+    println!("{:?}", req);
 
     let msg = req.serialize().unwrap();
 
