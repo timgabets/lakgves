@@ -20,6 +20,7 @@ use async_std::io;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use futures::StreamExt;
+use rand::Rng;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
 use std::path::PathBuf;
@@ -41,12 +42,14 @@ struct Opt {
 struct AppState {
     host_stream: TcpStream,
     streams: Vec<TcpStream>,
+    n_connections: usize,
 }
 
 impl AppState {
-    pub async fn new(dhi_host: &str) -> Self {
+    pub async fn new(dhi_host: &str, n_connections: i64) -> Self {
         let mut streams: Vec<TcpStream> = Vec::new();
-        for x in 0..5 {
+        let n_connections = n_connections as usize;
+        for x in 0..n_connections {
             let s = TcpStream::connect(dhi_host).await.unwrap();
             streams.push(s);
             println!("Connection #{} established", x);
@@ -55,12 +58,22 @@ impl AppState {
         let app_state = AppState {
             host_stream: TcpStream::connect(dhi_host).await.unwrap(),
             streams: streams,
+            n_connections: n_connections,
         };
         app_state
     }
 
+    fn get_stream_index(&self) -> usize {
+        let mut rng = rand::thread_rng();
+        let indx: usize = rng.gen();
+        indx % self.n_connections
+    }
+
     pub fn get_stream(&self) -> &TcpStream {
-        &self.host_stream
+        // TODO: round robin
+        let indx = self.get_stream_index();
+        println!("Using connection #{}", indx);
+        &self.streams[indx]
     }
 }
 
@@ -207,7 +220,8 @@ async fn main() -> std::io::Result<()> {
 
     // TODO: iterate through channels
     let dhi_host = &cfg.channels["dhi"]["host"].as_str().unwrap();
-    let app_state = web::Data::new(AppState::new(dhi_host).await);
+    let n_connections = cfg.channels["dhi"]["n_connections"].as_integer().unwrap();
+    let app_state = web::Data::new(AppState::new(dhi_host, n_connections).await);
 
     app_state.host_stream.set_nodelay(true)?;
     println!("Connected to {}", dhi_host);

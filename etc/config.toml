@@ -23,7 +23,7 @@ keep_alive = 60
 	host = "127.0.0.1:6142"
 
 	# Number of connections to the given host
-	n_connections = 5
+	n_connections = 17
 
 	# Connection keep alive (seconds)
 	keep_alive = 75
