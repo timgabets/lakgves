@@ -19,7 +19,11 @@ keep_alive = 60
 	# format = "DHI-XML"
 
 	# Host to connect to
-	host = "10.217.13.27:10304"
+	#host = "10.217.13.27:10304"
+	host = "127.0.0.1:6142"
+
+	# Number of connections to the given host
+	n_connections = 5
 
 	# Connection keep alive (seconds)
 	keep_alive = 75
