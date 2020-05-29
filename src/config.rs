@@ -77,6 +77,7 @@ mod tests {
             app_cfg.channels["dhi"]["host"],
             Value::from("host.bank.com:10309")
         );
+        assert_eq!(app_cfg.channels["dhi"]["n_connections"], Value::from(5));
         assert_eq!(app_cfg.channels["dhi"]["keep_alive"], Value::from(75));
         assert_eq!(app_cfg.channels["dhi"]["timeout"], Value::from(30));
 
@@ -85,6 +86,7 @@ mod tests {
             app_cfg.channels["vsms"]["host"],
             Value::from("visa.bank.com:10303")
         );
+        assert_eq!(app_cfg.channels["vsms"]["n_connections"], Value::from(3));
         assert_eq!(app_cfg.channels["vsms"]["keep_alive"], Value::from(75));
         assert_eq!(app_cfg.channels["vsms"]["timeout"], Value::from(20));
     }

@@ -40,11 +40,33 @@ struct Opt {
 // TODO: Impl AppState
 struct AppState {
     host_stream: TcpStream,
+    streams: Vec<TcpStream>,
+}
+
+impl AppState {
+    pub async fn new(dhi_host: &str) -> Self {
+        let mut streams: Vec<TcpStream> = Vec::new();
+        for x in 0..5 {
+            let s = TcpStream::connect(dhi_host).await.unwrap();
+            streams.push(s);
+            println!("Connection #{} established", x);
+        }
+
+        let app_state = AppState {
+            host_stream: TcpStream::connect(dhi_host).await.unwrap(),
+            streams: streams,
+        };
+        app_state
+    }
+
+    pub fn get_stream(&self) -> &TcpStream {
+        &self.host_stream
+    }
 }
 
 /// Asynchronously exchange data with DHI host
 async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIResponse, AppError> {
-    let mut s = &data.host_stream;
+    let mut s = data.get_stream();
     let mut buffer = [0; 8192];
 
     // TODO: timeout from app state
@@ -62,7 +84,7 @@ async fn talk_to_dhi_host(data: web::Data<AppState>, msg: String) -> Result<DHIR
 
 /// Asynchronously exchange data with SP host
 async fn talk_to_sp_host(data: web::Data<AppState>, msg: String) -> Result<SPResponse, AppError> {
-    let mut s = &data.host_stream;
+    let mut s = data.get_stream();
     let mut buffer = [0; 8192];
 
     // TODO: timeout from app state
@@ -132,7 +154,7 @@ async fn serve_sp_request(
     let body = body.next().await.unwrap()?;
     let mut req = SPRequest::new(&body);
 
-    // We've got a deserialized request, and can apply some logic
+    // We've got a deserialized request, and can apply some logic.
     // The logic - generating and assinging Message ID
     req.gen_message_id();
 
@@ -185,9 +207,7 @@ async fn main() -> std::io::Result<()> {
 
     // TODO: iterate through channels
     let dhi_host = &cfg.channels["dhi"]["host"].as_str().unwrap();
-    let app_state = web::Data::new(AppState {
-        host_stream: TcpStream::connect(dhi_host).await?,
-    });
+    let app_state = web::Data::new(AppState::new(dhi_host).await);
 
     app_state.host_stream.set_nodelay(true)?;
     println!("Connected to {}", dhi_host);
