@@ -20,10 +20,10 @@ use async_std::io;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use futures::StreamExt;
-use rand::Rng;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
 use std::path::PathBuf;
+use std::sync::Mutex;
 use std::time::Duration;
 use structopt::StructOpt;
 
@@ -43,6 +43,7 @@ struct AppState {
     host_stream: TcpStream,
     streams: Vec<TcpStream>,
     n_connections: usize,
+    conn_index: Mutex<usize>,
 }
 
 impl AppState {
@@ -59,20 +60,20 @@ impl AppState {
             host_stream: TcpStream::connect(dhi_host).await.unwrap(),
             streams: streams,
             n_connections: n_connections,
+            conn_index: Mutex::new(0),
         };
         app_state
     }
 
     fn get_stream_index(&self) -> usize {
-        let mut rng = rand::thread_rng();
-        let indx: usize = rng.gen();
-        indx % self.n_connections
+        let mut conn_index = self.conn_index.lock().unwrap();
+        *conn_index += 1;
+        *conn_index % self.n_connections
     }
 
     pub fn get_stream(&self) -> &TcpStream {
-        // TODO: round robin
         let indx = self.get_stream_index();
-        println!("Using connection #{}", indx);
+        // println!("Using connection #{}", indx);
         &self.streams[indx]
     }
 }
@@ -180,10 +181,14 @@ async fn serve_sp_request(
 
     // Checking result of talking to host
     match res {
-        Ok(res) => Ok(HttpResponse::Ok()
-            .content_type("text/xml")
-            .header("X-Hdr", "sample")
-            .body(res.serialize().unwrap())),
+        Ok(res) => {
+            let serialized = res.serialize().unwrap();
+            println!("{:?}", serialized);
+            Ok(HttpResponse::Ok()
+                .content_type("text/xml")
+                .header("X-Hdr", "sample")
+                .body(serialized))
+        }
         Err(err) => match err {
             AppError::IoError(err) => {
                 println!("Error: {:?}", err);
