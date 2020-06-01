@@ -986,6 +986,7 @@ dependencies = [
  "sp-xml",
  "structopt",
  "toml",
+ "xml-rs",
 ]
 
 [[package]]
