@@ -38,9 +38,7 @@ struct Opt {
     config: PathBuf,
 }
 
-// TODO: Impl AppState
 struct AppState {
-    host_stream: TcpStream,
     streams: Vec<TcpStream>,
     n_connections: usize,
     conn_index: Mutex<usize>,
@@ -52,12 +50,12 @@ impl AppState {
         let n_connections = n_connections as usize;
         for x in 0..n_connections {
             let s = TcpStream::connect(dhi_host).await.unwrap();
+            s.set_nodelay(true).unwrap();
             streams.push(s);
             println!("Connection #{} established", x);
         }
 
         let app_state = AppState {
-            host_stream: TcpStream::connect(dhi_host).await.unwrap(),
             streams: streams,
             n_connections: n_connections,
             conn_index: Mutex::new(0),
@@ -228,7 +226,6 @@ async fn main() -> std::io::Result<()> {
     let n_connections = cfg.channels["dhi"]["n_connections"].as_integer().unwrap();
     let app_state = web::Data::new(AppState::new(dhi_host, n_connections).await);
 
-    app_state.host_stream.set_nodelay(true)?;
     println!("Connected to {}", dhi_host);
 
     HttpServer::new(move || {
