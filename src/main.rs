@@ -1,13 +1,7 @@
-extern crate yaserde;
-#[macro_use]
-extern crate yaserde_derive;
 extern crate xml;
 
 mod dhi;
 use dhi::{DHIRequest, DHIResponse};
-
-mod spxml;
-use spxml::{SPRequest, SPResponse};
 
 mod errors;
 use errors::AppError;
@@ -22,6 +16,7 @@ use async_std::prelude::*;
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
+use sp_xml::{SPRequest, SPResponse};
 use std::path::PathBuf;
 use std::sync::Mutex;
 use std::time::Duration;
