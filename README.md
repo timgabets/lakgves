@@ -66,6 +66,12 @@ will be converted into one of the [ISO8583](https://en.wikipedia.org/wiki/ISO_85
 
 Please refer to your [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) specification for the fields meaning and possible values.
 
+
+### Supported formats
+The list of supported formats:
+* TSYS DHI
+* [IBM Safer Payments XML](https://github.com/timgabets/sp-xml)
+
 ### Usage
 ```bash
 cargo run etc/config.toml
