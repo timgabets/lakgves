@@ -909,7 +909,7 @@ dependencies = [
 
 [[package]]
 name = "lakgves"
-version = "0.1.10"
+version = "0.1.11"
 dependencies = [
  "actix-rt",
  "actix-web",
