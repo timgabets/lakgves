@@ -29,7 +29,7 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "proust",
+    name = "lakgves",
     about = "Application for testing Bank credit card processing systems."
 )]
 struct Opt {
