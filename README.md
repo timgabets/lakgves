@@ -69,7 +69,7 @@ Please refer to your [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) specifica
 
 ### Supported formats
 The list of supported formats:
-* TSYS DHI
+* [TSYS DHI (Device Host Interface) XML](https://github.com/timgabets/dhi-xml)
 * [IBM Safer Payments XML](https://github.com/timgabets/sp-xml)
 
 ### Usage

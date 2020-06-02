@@ -1,7 +1,6 @@
 extern crate xml;
 
-mod dhi;
-use dhi::{DHIRequest, DHIResponse};
+use dhi_xml::{DHIRequest, DHIResponse};
 
 mod errors;
 use errors::AppError;
@@ -43,6 +42,8 @@ impl AppState {
     pub async fn new(dhi_host: &str, n_connections: i64) -> Self {
         let mut streams: Vec<TcpStream> = Vec::new();
         let n_connections = n_connections as usize;
+
+        println!("Connecting to {}", dhi_host);
         for x in 0..n_connections {
             let s = TcpStream::connect(dhi_host).await.unwrap();
             s.set_nodelay(true).unwrap();
@@ -50,6 +51,7 @@ impl AppState {
             println!("Connection #{} established", x);
         }
 
+        println!("Initializing AppState");
         let app_state = AppState {
             streams: streams,
             n_connections: n_connections,
