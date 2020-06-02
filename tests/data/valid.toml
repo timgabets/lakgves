@@ -13,7 +13,7 @@ keep_alive = 300
 
 	[channels.vsms]
 	host = "visa.bank.com:10303"
-	n_connections = 3
+	n_connections = 1
 	keep_alive = 75
 	timeout = 20
 

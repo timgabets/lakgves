@@ -26,6 +26,7 @@ struct Channel {
     port: u16,
     keep_alive: usize,
     timeout: usize,
+    n_connections: usize,
 }
 
 #[derive(Deserialize, Debug)]
@@ -86,7 +87,7 @@ mod tests {
             app_cfg.channels["vsms"]["host"],
             Value::from("visa.bank.com:10303")
         );
-        assert_eq!(app_cfg.channels["vsms"]["n_connections"], Value::from(3));
+        assert_eq!(app_cfg.channels["vsms"]["n_connections"], Value::from(1));
         assert_eq!(app_cfg.channels["vsms"]["keep_alive"], Value::from(75));
         assert_eq!(app_cfg.channels["vsms"]["timeout"], Value::from(20));
     }
