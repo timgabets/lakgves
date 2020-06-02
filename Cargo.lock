@@ -922,11 +922,10 @@ dependencies = [
  "serde-xml-rs",
  "serde_derive",
  "serde_json",
+ "sp-xml",
  "structopt",
  "toml",
  "xml-rs",
- "yaserde",
- "yaserde_derive",
 ]
 
 [[package]]
@@ -1432,6 +1431,19 @@ dependencies = [
  "libc",
  "redox_syscall",
  "winapi 0.3.8",
+]
+
+[[package]]
+name = "sp-xml"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4ef16701f591dd88aa4e6a2361444341c3696f251ffb6531d4cef38c2333749"
+dependencies = [
+ "log",
+ "rand",
+ "xml-rs",
+ "yaserde",
+ "yaserde_derive",
 ]
 
 [[package]]

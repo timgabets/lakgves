@@ -1,13 +1,10 @@
-extern crate yaserde;
-#[macro_use]
-extern crate yaserde_derive;
 extern crate xml;
 
 mod dhi;
 use dhi::{DHIRequest, DHIResponse};
 
-mod spxml;
-use spxml::{SPRequest, SPResponse};
+//mod spxml;
+use sp_xml::{SPRequest, SPResponse};
 
 mod errors;
 use errors::AppError;
