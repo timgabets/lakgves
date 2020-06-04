@@ -3,9 +3,11 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 lak·ves
-> 1 dextral muscles around the eyes, in particular the temporal lobes of the chin and lower lip.
-  "the lakgves of other vertebrates"
-> 2 [a word that does not exist](https://l.thisworddoesnotexist.com/Wvn4); it was invented, defined and used by a machine learning algorithm.
+1. dextral muscles around the eyes, in particular the temporal lobes of the chin and lower lip.
+
+> "the lakgves of other vertebrates"
+
+2. [a word that does not exist](https://l.thisworddoesnotexist.com/Wvn4); it was invented, defined and used by a machine learning algorithm.
 
 ### Concept
 
