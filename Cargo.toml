@@ -5,7 +5,7 @@ version = "0.1.14"
 authors = ["Tim Gabets <tim@gabets.ru>"]
 edition = "2018"
 readme = "README.md"
-license = "GPL-3.0"
+license = "MIT"
 categories = ["web-programming::http-server", "development-tools", "simulation"]
 keywords = ["iso8583", "card", "processing"]
 repository = "https://github.com/timgabets/lakgves"
@@ -29,3 +29,8 @@ sp-xml = "0.1"
 structopt = "0.3.14"
 toml = "0.5.6"
 xml-rs = "0.8.0"
+[package.metadata.rpm.cargo]
+buildflags = ["--release"]
+
+[package.metadata.rpm.targets]
+lakgves = { path = "/usr/bin/lakgves" }
