@@ -16,7 +16,7 @@ use serde_json::Value;
 use serde_xml_rs::from_reader;
 use sp_xml::{SPRequest, SPResponse};
 use std::path::PathBuf;
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 use structopt::StructOpt;
 
@@ -34,7 +34,7 @@ struct Opt {
 struct AppState {
     streams: Vec<TcpStream>,
     n_connections: usize,
-    conn_index: Mutex<usize>,
+    conn_index: AtomicUsize,
 }
 
 impl AppState {
@@ -48,23 +48,22 @@ impl AppState {
             println!("Connection #{} established", x);
         }
 
-        let app_state = AppState {
-            streams: streams,
-            n_connections: n_connections,
-            conn_index: Mutex::new(0),
-        };
-        app_state
+        println!("Connected to {:?}", dhi_host);
+
+        AppState {
+            streams,
+            n_connections,
+            conn_index: AtomicUsize::new(0),
+        }
     }
 
     fn get_stream_index(&self) -> usize {
-        let mut conn_index = self.conn_index.lock().unwrap();
-        *conn_index += 1;
-        *conn_index % self.n_connections
+        let indx = self.conn_index.fetch_add(1, Ordering::SeqCst);
+        indx % self.n_connections
     }
 
     pub fn get_stream(&self) -> &TcpStream {
         let indx = self.get_stream_index();
-        // println!("Using connection #{}", indx);
         &self.streams[indx]
     }
 }
@@ -218,8 +217,6 @@ async fn main() -> std::io::Result<()> {
     let dhi_host = &cfg.channels["dhi"]["host"].as_str().unwrap();
     let n_connections = cfg.channels["dhi"]["n_connections"].as_integer().unwrap();
     let app_state = web::Data::new(AppState::new(dhi_host, n_connections).await);
-
-    println!("Connected to {}", dhi_host);
 
     HttpServer::new(move || {
         App::new()
