@@ -571,6 +571,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "dhi-xml"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4c5bcf217d077895a0400d5357e67ccea8e3e443c3c1fd7d73fd35058242b858"
+dependencies = [
+ "chrono",
+ "log",
+ "rand",
+ "serde",
+ "serde-xml-rs",
+ "serde_derive",
+ "serde_json",
+ "xml-rs",
+]
+
+[[package]]
 name = "dtoa"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -915,6 +931,7 @@ dependencies = [
  "actix-web",
  "async-std",
  "chrono",
+ "dhi-xml",
  "futures",
  "log",
  "rand",

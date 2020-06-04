@@ -1,8 +1,5 @@
 extern crate xml;
 
-mod dhi;
-use dhi::{DHIRequest, DHIResponse};
-
 mod errors;
 use errors::AppError;
 
@@ -13,6 +10,7 @@ use actix_web::{web, App, Error, HttpResponse, HttpServer};
 use async_std::io;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
+use dhi_xml::{DHIRequest, DHIResponse};
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
