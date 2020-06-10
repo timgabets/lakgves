@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.15] - 2020-06-10
 ### Added
-- Building RPM package and uploading it to [packagecloud.io](https://packagecloud.io/timgabets/lakgves).
+- Building RPM package with ``cargo rpm build``.
 
 ## [0.1.14] - 2020-06-04
 ### Changed
