@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name: lakgves
-Summary: Framework for testing Bank credit card processing systems (ISO8583)
+Summary: Application for testing Bank credit card processing systems (ISO8583)
 Version: @@VERSION@@
 Release: @@RELEASE@@
 License: MIT

@@ -79,14 +79,21 @@ The list of supported formats:
 
 ### Installation
 #### Red Hat/Fedora:
+Quick install:
 ```bash
-# Adding repository
 curl -s https://packagecloud.io/install/repositories/timgabets/lakgves/script.rpm.sh | sudo bash
+sudo yum install lakgves
 ```
 
+### Running
 ```bash
-sudo yum install lakgves
-lakgves /etc/lakgves/config.toml
+# Edit configuration file /etc/lakgves/config.toml and then run
+/usr/bin/lakgves /etc/lakgves/config.toml
+```
+
+Alternatively, start/stop the app as a service (TODO):
+```bash
+sudo systemctl start lakgves
 ```
 
 ### Usage
