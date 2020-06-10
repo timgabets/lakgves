@@ -34,3 +34,6 @@ buildflags = ["--release"]
 
 [package.metadata.rpm.targets]
 lakgves = { path = "/usr/bin/lakgves" }
+
+[package.metadata.rpm.files]
+"config.toml" = { path = "/etc/lakgves/config.toml", username = "root", groupname = "root", mode = "640" }
