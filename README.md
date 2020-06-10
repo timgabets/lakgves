@@ -4,13 +4,13 @@
 
 ### Concept
 
-HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter. The main purpose of the system is testing Issuer Bank systems.
+HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter, written from scratch in Rust and heavily inspired by [JUKS' socket queue](https://github.com/juks/iso-8583-socket-queue). The main purpose of the system is testing Issuer Bank systems.
 
-                               +-----------------+                        +--------------------+
-                               |                 | <---   ISO 8583   ---> |    Issuer Bank     |
-    HTTP client <--- JSON ---> |     Lakgves     | <--- VISA SMS/DMS ---> |   Authorization    |
-                               |                 | <---  Mastercard  ---> |        Host        |
-                               +-----------------+                        +--------------------+
+                               +-----------------+                              +--------------------+
+                               |                 | <------ XML ISO 8583 ------> |    Issuer Bank     |
+    HTTP client <--- JSON ---> |     Lakgves     | <--- TODO (VISA SMS/DMS) --> |   Authorization    |
+                               |                 | <---  TODO (Mastercard) ---> |        Host        |
+                               +-----------------+                              +--------------------+
 
 The application converts JSON payload to ISO8583 message in a proper format, sends it to the Bank host, receives the response and sends it back to the HTTP client.
 In other words, the input JSON like this (note that the card number in i002 and expiration date in i014 are masked here for security reasons. The real request should contain the full unmacked data):
