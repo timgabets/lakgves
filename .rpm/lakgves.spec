@@ -27,5 +27,6 @@ cp -a * %{buildroot}
 rm -rf %{buildroot}
 
 %files
+%config(noreplace) %attr(640, root, wheel) %{_sysconfdir}/lakgves/config.toml
 %defattr(-,root,root,-)
 %{_bindir}/*
