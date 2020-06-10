@@ -77,12 +77,20 @@ The list of supported formats:
 * [TSYS DHI (Device Host Interface) XML](https://github.com/timgabets/dhi-xml)
 * [IBM Safer Payments XML](https://github.com/timgabets/sp-xml)
 
-### Usage
+### Installation
+#### Red Hat/Fedora:
 ```bash
-cargo run etc/config.toml
+# Adding repository
+curl -s https://packagecloud.io/install/repositories/timgabets/lakgves/script.rpm.sh | sudo bash
 ```
 
-After that, any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lakgves app:
+```bash
+sudo yum install lakgves
+lakgves /etc/lakgves/config.toml
+```
+
+### Usage
+Any HTTP tool (e.g. [curl](https://curl.haxx.se/) or [SoapUI](https://www.soapui.org/)) may be used to interact with the Lakgves app:
 ```
 curl -v --header "Content-Type: application/json" --request POST --data '{"i000":"0100", "i002":"443322******0961", "i003":"300000", "i004":"000000000000", "i014":"****", "i018":"6011", "i022":"0100", "i023":"000", "i025":"02", "i026":"04", "i032":"999999", "i041":"TERMID01", "i042":"IDDQD MERCH ID", "i043":"IDDQD AM. 341215574     341215574 MSKRU", "i049":"643", "i053":"9801100001000000"}' localhost:8080
 ```
