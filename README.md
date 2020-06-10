@@ -10,7 +10,12 @@ HTTP to [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) message converter, wri
                                |                 | <------ XML ISO 8583 ------> |    Issuer Bank     |
     HTTP client <--- JSON ---> |     Lakgves     | <--- TODO (VISA SMS/DMS) --> |   Authorization    |
                                |                 | <---  TODO (Mastercard) ---> |        Host        |
-                               +-----------------+                              +--------------------+
+                               +--------+--------+                              +--------------------+
+                                        |                  +--------------------+
+                                        |                  |    Issuer Bank     |
+                                        +---- SP XML ----> |     Anti-Fraud     |
+                                                           |       System       |
+                                                           +--------------------+
 
 The application converts JSON payload to ISO8583 message in a proper format, sends it to the Bank host, receives the response and sends it back to the HTTP client.
 In other words, the input JSON like this (note that the card number in i002 and expiration date in i014 are masked here for security reasons. The real request should contain the full unmacked data):
