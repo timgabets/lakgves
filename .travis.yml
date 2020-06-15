@@ -8,8 +8,10 @@ rust:
   - stable
 jobs:
   fast_finish: true
-#cache: cargo
+cache: cargo
 install:
   - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
+after_success:
+  - cargo rpm build
