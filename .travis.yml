@@ -3,7 +3,7 @@ dist: bionic
 addons:
   apt:
     packages:
-    - rpmbuild
+    - rpm
 rust:
   - stable
 jobs:
@@ -13,5 +13,3 @@ install:
   - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
-after_success:
-  - apt-get install rpmbuild
