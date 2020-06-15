@@ -4,14 +4,20 @@ addons:
   apt:
     packages:
     - rpm
+env:
+  - PACKAGECLOUD_TOKEN=702e59bc0a8d050b6da2a70425ed476fc9d802ce5ff9dac1
 rust:
   - stable
 jobs:
   fast_finish: true
 cache: cargo
+before_install:
+  - gem install package_cloud
 install:
   - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
 after_success:
   - cargo rpm build
+  - ls ./
+  - ls target/release/rpmbuild/RPMS/x86_64/*
