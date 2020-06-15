@@ -27,6 +27,7 @@ cp -a * %{buildroot}
 rm -rf %{buildroot}
 
 %files
+%{_unitdir}/lakgves.service
 %config(noreplace) %attr(640, root, wheel) %{_sysconfdir}/lakgves/config.toml
 %defattr(-,root,root,-)
 %{_bindir}/*

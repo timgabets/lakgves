@@ -90,14 +90,21 @@ sudo yum install lakgves
 ```
 
 ### Running
+Start app as a service:
+```bash
+sudo systemctl start lakgves
+sudo systemctl status lakgves
+```
+
+The application logs may be retrived by journalctl:
+```
+journalctl -u lakgves
+```
+
+Alternatively, execute application manually:
 ```bash
 # Edit configuration file /etc/lakgves/config.toml and then run
 /usr/bin/lakgves /etc/lakgves/config.toml
-```
-
-Alternatively, start/stop the app as a service (TODO):
-```bash
-sudo systemctl start lakgves
 ```
 
 ### Usage
