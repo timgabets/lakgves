@@ -1,5 +1,9 @@
 language: rust
 dist: bionic
+addons:
+  apt:
+    packages:
+    - rpmbuild
 rust:
   - stable
 jobs:
