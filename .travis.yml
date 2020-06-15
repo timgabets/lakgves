@@ -4,6 +4,8 @@ rust:
 jobs:
   fast_finish: true
 cache: cargo
+install:
+  - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
   - cargo rpm build
