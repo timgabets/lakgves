@@ -3,9 +3,10 @@ rust:
   - stable
 jobs:
   fast_finish: true
-cache: cargo
+#cache: cargo
 install:
   - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
-  - cargo rpm build
+after_success:
+  - apt-get install rpmbuild
