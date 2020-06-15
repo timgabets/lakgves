@@ -1,0 +1,19 @@
+[Unit]
+Description=Card processing systems testing Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=wheel
+UMask=0023
+OOMScoreAdjust=-100
+StandardOutput=journal
+StandardError=inherit
+ExecStart=/usr/bin/lakgves /etc/lakgves/config.toml
+Restart=on-failure
+KillMode=process
+PrivateDevices=yes
+
+[Install]
+WantedBy=multi-user.target
