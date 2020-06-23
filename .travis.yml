@@ -18,6 +18,6 @@ install:
 script:
   - cargo test --verbose --all
 after_success:
-  - cargo rpm build
-  - ls target/release/rpmbuild/RPMS
-  - ls target/release/rpmbuild/RPMS/x86_64/
+  - cargo rpm build -v
+#  - ls target/release/rpmbuild/RPMS
+#  - ls target/release/rpmbuild/RPMS/x86_64/
