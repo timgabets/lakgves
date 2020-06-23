@@ -19,5 +19,5 @@ script:
   - cargo test --verbose --all
 after_success:
   - cargo rpm build
-  - ls ./target/release/
-  - ls target/release/rpmbuild/
+  - ls target/release/rpmbuild/RPMS
+  - ls target/release/rpmbuild/RPMS/x86_64/
