@@ -21,3 +21,5 @@ after_success:
   - cargo rpm build -v
 #  - ls target/release/rpmbuild/RPMS
 #  - ls target/release/rpmbuild/RPMS/x86_64/
+  - package_cloud push timgabets/lakgves/fedora/28 lakgves/target/release/rpmbuild/RPMS/x86_64/*.rpm
+
