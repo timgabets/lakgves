@@ -122,10 +122,10 @@ async fn serve_dhi_request(
         Ok(res) => {
             println!("{:?}", res);
             Ok(HttpResponse::Ok()
-            .content_type("application/json")
-            .header("X-Hdr", "sample")
-            .body(res.serialize().unwrap()))
-        },
+                .content_type("application/json")
+                .header("X-Hdr", "sample")
+                .body(res.serialize().unwrap()))
+        }
         Err(err) => match err {
             AppError::IoError(err) => {
                 println!("Error: {:?}", err);
