@@ -17,8 +17,5 @@ install:
   - cargo install cargo-rpm
 script:
   - cargo test --verbose --all
-#after_success:
   - cargo rpm build -v
-#  - ls target/release/rpmbuild/RPMS
-#  - ls target/release/rpmbuild/RPMS/x86_64/
-  - package_cloud push timgabets/lakgves/fedora/28 target/release/rpmbuild/RPMS/x86_64/lakgves-0.1.16-1.x86_64.rpm
+  - package_cloud push timgabets/lakgves/fedora/28 `ls target/release/rpmbuild/RPMS/x86_64/lakgves-*.x86_64.rpm`
