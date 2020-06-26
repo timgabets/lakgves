@@ -5,17 +5,24 @@ addons:
     packages:
     - rpm
 env:
-  - PACKAGECLOUD_TOKEN=702e59bc0a8d050b6da2a70425ed476fc9d802ce5ff9dac1
+- PACKAGECLOUD_TOKEN=702e59bc0a8d050b6da2a70425ed476fc9d802ce5ff9dac1
 rust:
-  - stable
+- stable
 jobs:
   fast_finish: true
 cache: cargo
 before_install:
-  - gem install package_cloud
+- gem install package_cloud
 install:
-  - cargo install cargo-rpm
+- cargo install cargo-rpm
 script:
-  - cargo test --verbose --all
-  - cargo rpm build -v
-  - package_cloud push timgabets/lakgves/fedora/28 `ls target/release/rpmbuild/RPMS/x86_64/lakgves-*.x86_64.rpm`
+- cargo test --verbose --all
+- cargo rpm build -v
+#- package_cloud push timgabets/lakgves/fedora/28 `ls target/release/rpmbuild/RPMS/x86_64/lakgves-*.x86_64.rpm`
+deploy:
+  provider: packagecloud
+  repository: lakgves
+  username: timgabets
+  dist: fedora/28
+  token:
+    secure: VwoEI+Ux6Zb/jx8OMzwgvewWL2lZsRNhRs2YjzgD0aYXEen/43vv8OqnYJ3kL/OFEM4fYk/Whqv9K7e9LNaUSyD8U29UXPhlf5HW0mQVuzp0jG3yqoIKwXJSb7iH+9+1Yj7pOh61yh0AxpkKV2quecG1jXL4h5L+jycr3qbxmkJ7j+o70gRMitAecRLpyJVblXf6IR0hHmMHTKWJ8aAMUTAfLWWA5JZAdz/zaTjkJYa1B3frqzf1LD6N7KcmlTyi0nr+8V1QQeDpuTU+8LIaMDmCe6AdrvmeZ/JxLD8H3q/8cRETXamqTDwX1uWWTs9rWmDSDc2gb4s65eRZ/c58Yu1ZegXPHXKkkJhciNcx79iBOUkJ74ivXkq5HE5ltYLvkBKcxL3/N/VXGRmv+igkaZENvTgOH+IYuVGOkNmuWro0JiZaI1Fu+1yNvzHB7U5pPbYyjekYthOd6s8/uFkdtguLkrPWUh28/zZB8965GXjk+XnLJrDp7eexpeuBJBEdNUxLivTtRkz3ZtuXVLaG2ntl/hs1zCCXRsijv8pzqc+gbhPOB4yobCpjJgoDie97+2d3fJ4jInYSguaM6TnV5CcS3rHLE933UPGQ+40jStAd1bautBmz4fHoG56lRDrC8AOjeqtgebSfOK2eDs3nkyha5XiBVCCq6l8r4MNmloU=
