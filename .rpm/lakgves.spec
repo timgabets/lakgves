@@ -1,6 +1,9 @@
 %define __spec_install_post %{nil}
 %define __os_install_post %{_dbpath}/brp-compress
 %define debug_package %{nil}
+%define _sysconfdir /etc
+%define _unitdir /usr/lib/systemd/system/
+%define _bindir /usr/bin
 
 Name: lakgves
 Summary: Application for testing Bank credit card processing systems (ISO8583)

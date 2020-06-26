@@ -115,12 +115,17 @@ async fn serve_dhi_request(
     let r: DHIRequest = DHIRequest::new(iso_obj);
     let msg = r.serialize().unwrap();
 
+    println!("{:?}", msg);
+
     let res = talk_to_dhi_host(data, msg).await;
     match res {
-        Ok(res) => Ok(HttpResponse::Ok()
-            .content_type("application/json")
-            .header("X-Hdr", "sample")
-            .body(res.serialize().unwrap())),
+        Ok(res) => {
+            println!("{:?}", res);
+            Ok(HttpResponse::Ok()
+                .content_type("application/json")
+                .header("X-Hdr", "sample")
+                .body(res.serialize().unwrap()))
+        }
         Err(err) => match err {
             AppError::IoError(err) => {
                 println!("Error: {:?}", err);
