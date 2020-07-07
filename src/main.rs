@@ -11,6 +11,7 @@ use async_std::io;
 use async_std::net::TcpStream;
 use async_std::prelude::*;
 use dhi_xml::{DHIRequest, DHIResponse};
+use extfg_sigma::{SigmaRequest, SigmaResponse};
 use futures::StreamExt;
 use serde_json::Value;
 use serde_xml_rs::from_reader;
@@ -100,6 +101,26 @@ async fn talk_to_sp_host(data: web::Data<AppState>, msg: String) -> Result<SPRes
     .await?;
 
     let response = SPResponse::new(&buffer);
+    Ok(response)
+}
+
+/// Asynchronously exchange data with IPS host
+async fn talk_to_ips_host(
+    data: web::Data<AppState>,
+    msg: bytes::BytesMut,
+) -> Result<SigmaResponse, AppError> {
+    let mut s = data.get_stream();
+    let mut buffer = [0; 8192];
+
+    // TODO: timeout from app state
+    io::timeout(Duration::from_secs(5), async {
+        s.write_all(&msg).await?;
+        s.read(&mut buffer).await?;
+        Ok(())
+    })
+    .await?;
+
+    let response = SigmaResponse::new(&buffer);
     Ok(response)
 }
 
@@ -213,6 +234,62 @@ async fn serve_sp_request(
     }
 }
 
+// TODO: write tests to cover all the unwrapping
+async fn serve_ips_request(
+    data: web::Data<AppState>,
+    mut body: web::Payload,
+) -> Result<HttpResponse, Error> {
+    let body = body.next().await.unwrap()?;
+    let payload = String::from_utf8(body.to_vec()).unwrap();
+    let obj: Value = serde_json::from_str(&payload).unwrap();
+    let req = SigmaRequest::new(obj).unwrap();
+
+    println!("{:?}", req);
+
+    let msg = req.serialize().unwrap();
+
+    // Sending stuff
+    let res = talk_to_ips_host(data, msg).await;
+
+    // Checking result of talking to host
+    match res {
+        Ok(res) => {
+            let serialized = res.serialize().unwrap();
+            println!("{:?}", serialized);
+            Ok(HttpResponse::Ok()
+                .content_type("text/xml")
+                .header("X-Hdr", "sample")
+                .body(serialized))
+        }
+        Err(err) => match err {
+            AppError::IoError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::GatewayTimeout()
+                    .content_type("plain/text")
+                    .body("Error communicating with IPS host"))
+            }
+            AppError::ParseError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Error processing data from IPS host"))
+            }
+            AppError::SerializeError(err) => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Serialization error"))
+            }
+            _ => {
+                println!("Error: {:?}", err);
+                Ok(HttpResponse::InternalServerError()
+                    .content_type("plain/text")
+                    .body("Internal error"))
+            }
+        },
+    }
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let opt = Opt::from_args();
@@ -227,7 +304,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .route("/dhi", web::post().to(serve_dhi_request))
-            .route("/", web::post().to(serve_sp_request))
+            .route("/sp", web::post().to(serve_sp_request))
+            .route("/ips", web::post().to(serve_ips_request))
     })
     .workers(cfg.get_num_of_workers())
     .keep_alive(cfg.get_listener_keep_alive())
