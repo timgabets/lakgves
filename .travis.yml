@@ -24,7 +24,7 @@ deploy:
   repository: lakgves
   username: timgabets
   dist: fedora/28
-  skip_cleanup: false
+  skip_cleanup: true
   local-dir: target/release/rpmbuild/RPMS/x86_64/
   on:
     branch: release
